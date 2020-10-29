@@ -1,0 +1,21 @@
+{
+  "name": "chaos-jstalks-2020",
+  "version": "0.0.1",
+  "description": "Chaos@JsTalks2020",
+  "repository": "https://github.com/ChaosGroup/chaos-boats-jstalks-2020.git",
+  "author": "Martin Dimitrov <martin@sachmata.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "prettier": "^2.1.2"
+  },
+  "scripts": {
+    "start": "parcel serve src/index.html -d public --port 3001",
+    "build": "parcel build src/index.html -d public --public-url . --experimental-scope-hoisting --no-source-maps",
+    "prettier": "prettier --write \"src/**/*.(js*|html)\""
+  },
+  "dependencies": {
+    "phaser": "^3.24.1"
+  }
+}
