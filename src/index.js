@@ -1,49 +1,19 @@
 import Phaser from 'phaser';
 
-import skyImg from './assets/skies/space3.png';
-import logoImg from './assets/sprites/phaser3-logo.png';
-import redImg from './assets/particles/red.png';
-
-function preload() {
-	this.load.image('sky', skyImg);
-	this.load.image('logo', logoImg);
-	this.load.image('red', redImg);
-}
-
-function create() {
-	this.add.image(800, 600, 'sky');
-
-	var particles = this.add.particles('red');
-
-	var emitter = particles.createEmitter({
-		speed: 100,
-		scale: { start: 1, end: 0 },
-		blendMode: 'ADD',
-	});
-
-	var logo = this.physics.add.image(400, 100, 'logo');
-
-	logo.setVelocity(100, 200);
-	logo.setBounce(1, 1);
-	logo.setCollideWorldBounds(true);
-
-	emitter.startFollow(logo);
-}
+import { Game } from './scenes';
 
 const CONFIG = {
-	type: Phaser.AUTO,
-	width: 800,
-	height: 600,
+	title: 'Chaos@JsTalks2020',
+	type: Phaser.CANVAS,
+	parent: 'phaser-container',
+	width: 960,
+	height: 960,
 	physics: {
 		default: 'arcade',
-		arcade: {
-			gravity: { y: 200 },
-		},
+		arcade: { gravity: { x: 0, y: 0 } },
 	},
-	scene: {
-		preload: preload,
-		create: create,
-	},
+	audio: { noAudio: true },
+	scene: [Game],
 };
 
-new Phaser.Game(CONFIG);
+export default new Phaser.Game(CONFIG);
