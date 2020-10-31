@@ -10,7 +10,7 @@ const CONFIG = {
 	height: 960,
 	physics: {
 		default: 'arcade',
-		arcade: { gravity: { x: 0, y: 0 } },
+		arcade: { gravity: { x: 0, y: 0 }, debug: false },
 	},
 	audio: { noAudio: true },
 	scene: [Game],

@@ -1,10 +1,6 @@
 {
 	"compressionlevel": -1,
-	"editorsettings": {
-		"export": {
-			"target": "."
-		}
-	},
+	"editorsettings": { "export": { "target": "." } },
 	"height": 30,
 	"infinite": false,
 	"layers": [
@@ -82,26 +78,11 @@
 								"id": 4,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": -50,
-										"y": 15
-									},
-									{
-										"x": -64,
-										"y": 34
-									},
-									{
-										"x": -64,
-										"y": 64
-									},
-									{
-										"x": 0,
-										"y": 64
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": -50, "y": 15 },
+									{ "x": -64, "y": 34 },
+									{ "x": -64, "y": 64 },
+									{ "x": 0, "y": 64 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -117,13 +98,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 1,
@@ -150,13 +125,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 2,
@@ -170,26 +139,11 @@
 								"id": 4,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": 30,
-										"y": 2
-									},
-									{
-										"x": 48,
-										"y": 15
-									},
-									{
-										"x": 64,
-										"y": 64
-									},
-									{
-										"x": 0,
-										"y": 64
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": 30, "y": 2 },
+									{ "x": 48, "y": 15 },
+									{ "x": 64, "y": 64 },
+									{ "x": 0, "y": 64 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -205,13 +159,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 3,
@@ -238,13 +186,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 4,
@@ -271,13 +213,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 5,
@@ -291,26 +227,11 @@
 								"id": 2,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": -64,
-										"y": 0
-									},
-									{
-										"x": -62,
-										"y": -34
-									},
-									{
-										"x": -48,
-										"y": -49
-									},
-									{
-										"x": 0,
-										"y": -64
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": -64, "y": 0 },
+									{ "x": -62, "y": -34 },
+									{ "x": -48, "y": -49 },
+									{ "x": 0, "y": -64 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -326,13 +247,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 6,
@@ -359,13 +274,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 7,
@@ -392,13 +301,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 8,
@@ -412,26 +315,11 @@
 								"id": 2,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": 31,
-										"y": 2
-									},
-									{
-										"x": 48,
-										"y": 13
-									},
-									{
-										"x": 64,
-										"y": 64
-									},
-									{
-										"x": 0,
-										"y": 64
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": 31, "y": 2 },
+									{ "x": 48, "y": 13 },
+									{ "x": 64, "y": 64 },
+									{ "x": 0, "y": 64 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -447,84 +335,15 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
-				{
-					"id": 9,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 10,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 11,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 12,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 13,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 14,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 15,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
+				{ "id": 9, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 10, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 11, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 12, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 13, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 14, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 15, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
 				{
 					"id": 16,
 					"objectgroup": {
@@ -550,13 +369,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 17,
@@ -583,13 +396,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 18,
@@ -616,13 +423,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 19,
@@ -649,13 +450,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 20,
@@ -682,13 +477,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 21,
@@ -715,13 +504,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 22,
@@ -748,13 +531,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 23,
@@ -781,13 +558,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 24,
@@ -814,84 +585,15 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
-				{
-					"id": 25,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 26,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 27,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 28,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 29,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 30,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 31,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
+				{ "id": 25, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 26, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 27, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 28, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 29, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 30, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 31, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
 				{
 					"id": 32,
 					"objectgroup": {
@@ -904,26 +606,11 @@
 								"id": 2,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": 14,
-										"y": 45
-									},
-									{
-										"x": 27,
-										"y": 59
-									},
-									{
-										"x": 64,
-										"y": 64
-									},
-									{
-										"x": 64,
-										"y": 0
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": 14, "y": 45 },
+									{ "x": 27, "y": 59 },
+									{ "x": 64, "y": 64 },
+									{ "x": 64, "y": 0 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -939,13 +626,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 33,
@@ -972,13 +653,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 34,
@@ -992,26 +667,11 @@
 								"id": 2,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": 64,
-										"y": 0
-									},
-									{
-										"x": 59,
-										"y": 38
-									},
-									{
-										"x": 46,
-										"y": 50
-									},
-									{
-										"x": 0,
-										"y": 64
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": 64, "y": 0 },
+									{ "x": 59, "y": 38 },
+									{ "x": 46, "y": 50 },
+									{ "x": 0, "y": 64 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -1027,13 +687,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 35,
@@ -1060,13 +714,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 36,
@@ -1093,13 +741,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 37,
@@ -1126,13 +768,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 38,
@@ -1159,13 +795,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 39,
@@ -1192,13 +822,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 40,
@@ -1225,84 +849,15 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
-				{
-					"id": 41,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 42,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 43,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 44,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 45,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 46,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 47,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
+				{ "id": 41, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 42, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 43, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 44, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 45, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 46, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 47, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
 				{
 					"id": 48,
 					"objectgroup": {
@@ -1328,13 +883,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 49,
@@ -1361,13 +910,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 50,
@@ -1394,13 +937,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 51,
@@ -1427,13 +964,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 52,
@@ -1460,13 +991,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 53,
@@ -1480,26 +1005,11 @@
 								"id": 2,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": 12,
-										"y": 43
-									},
-									{
-										"x": 28,
-										"y": 61
-									},
-									{
-										"x": 64,
-										"y": 64
-									},
-									{
-										"x": 64,
-										"y": 0
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": 12, "y": 43 },
+									{ "x": 28, "y": 61 },
+									{ "x": 64, "y": 64 },
+									{ "x": 64, "y": 0 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -1515,13 +1025,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 54,
@@ -1548,13 +1052,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 55,
@@ -1581,13 +1079,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 56,
@@ -1601,26 +1093,11 @@
 								"id": 2,
 								"name": "collide",
 								"polygon": [
-									{
-										"x": 0,
-										"y": 0
-									},
-									{
-										"x": 49,
-										"y": -14
-									},
-									{
-										"x": 61,
-										"y": -30
-									},
-									{
-										"x": 64,
-										"y": -64
-									},
-									{
-										"x": 0,
-										"y": -64
-									}
+									{ "x": 0, "y": 0 },
+									{ "x": 49, "y": -14 },
+									{ "x": 61, "y": -30 },
+									{ "x": 64, "y": -64 },
+									{ "x": 0, "y": -64 }
 								],
 								"rotation": 0,
 								"type": "",
@@ -1636,84 +1113,15 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
-				{
-					"id": 57,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 58,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 59,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 60,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 61,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 62,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 63,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
+				{ "id": 57, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 58, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 59, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 60, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 61, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 62, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 63, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
 				{
 					"id": 64,
 					"objectgroup": {
@@ -1739,13 +1147,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 65,
@@ -1772,13 +1174,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 66,
@@ -1805,13 +1201,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 67,
@@ -1838,13 +1228,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 68,
@@ -1871,124 +1255,19 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
-				{
-					"id": 69,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": false
-						}
-					]
-				},
-				{
-					"id": 70,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": false
-						}
-					]
-				},
-				{
-					"id": 71,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": false
-						}
-					]
-				},
-				{
-					"id": 72,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": false
-						}
-					]
-				},
-				{
-					"id": 73,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 74,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 75,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 76,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 77,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 78,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 79,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
+				{ "id": 69, "properties": [{ "name": "collide", "type": "bool", "value": false }] },
+				{ "id": 70, "properties": [{ "name": "collide", "type": "bool", "value": false }] },
+				{ "id": 71, "properties": [{ "name": "collide", "type": "bool", "value": false }] },
+				{ "id": 72, "properties": [{ "name": "collide", "type": "bool", "value": false }] },
+				{ "id": 73, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 74, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 75, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 76, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 77, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 78, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 79, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
 				{
 					"id": 80,
 					"objectgroup": {
@@ -2014,13 +1293,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 81,
@@ -2047,13 +1320,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 82,
@@ -2080,13 +1347,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 83,
@@ -2113,13 +1374,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 84,
@@ -2146,13 +1401,7 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
 				{
 					"id": 85,
@@ -2179,114 +1428,18 @@
 						"x": 0,
 						"y": 0
 					},
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
+					"properties": [{ "name": "collide", "type": "bool", "value": true }]
 				},
-				{
-					"id": 86,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": false
-						}
-					]
-				},
-				{
-					"id": 87,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": false
-						}
-					]
-				},
-				{
-					"id": 88,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 89,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 90,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 91,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 92,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 93,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 94,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				},
-				{
-					"id": 95,
-					"properties": [
-						{
-							"name": "collide",
-							"type": "bool",
-							"value": true
-						}
-					]
-				}
+				{ "id": 86, "properties": [{ "name": "collide", "type": "bool", "value": false }] },
+				{ "id": 87, "properties": [{ "name": "collide", "type": "bool", "value": false }] },
+				{ "id": 88, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 89, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 90, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 91, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 92, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 93, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 94, "properties": [{ "name": "collide", "type": "bool", "value": true }] },
+				{ "id": 95, "properties": [{ "name": "collide", "type": "bool", "value": true }] }
 			],
 			"tilewidth": 64
 		}
