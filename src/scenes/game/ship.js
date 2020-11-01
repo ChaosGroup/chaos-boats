@@ -11,17 +11,25 @@ import Phaser from 'phaser';
 // const BODY_SCALE_W = 0.7;
 // const BODY_SCALE_H = 0.8;
 
+const MAX_SPEED = 350;
+const SPEED_STEPS = 5;
+const STEER_STEPS = 5;
+const STEER_MAGIC = 7;
+
 export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	playerTurnEvent;
+	shipCapitan;
+
+	speed = 0;
+	steer = 0;
 
 	constructor(scene, x, y, texture, frame) {
 		super(scene, x, y, texture, frame);
 
 		this.playerTurnEvent = scene.time.addEvent({
-			delay: 1000,
-			callback: () => {
-				// console.log('playerTurn');
-			},
+			delay: 750,
+			callback: this.onPlayerTurn,
+			callbackScope: this,
 			loop: true,
 		});
 	}
@@ -33,31 +41,56 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		// arcade physics is AABB and doesnt support body rotation, use circular body
 		this.setCircle(this.width / 2, 0, this.height / 2 - this.width / 2);
 		this.setDepth(10);
-
-		this.setVelocity(
-			Phaser.Math.Between(100, 200) * (Phaser.Math.Between(0, 100) > 50 ? 1 : -1),
-			Phaser.Math.Between(100, 200) * (Phaser.Math.Between(0, 100) > 50 ? 1 : -1)
-		);
-		this.setAngularVelocity(
-			Phaser.Math.Between(100, 200) * (Phaser.Math.Between(0, 100) > 50 ? 1 : -1)
-		);
 	}
 
 	preUpdate(t, dt) {
 		super.preUpdate(t, dt);
+
+		const bodySpeed = Math.round((this.speed * MAX_SPEED) / SPEED_STEPS);
+		const bodyAngularVelocity = Math.round((this.steer * bodySpeed) / STEER_MAGIC);
+
+		this.setAngularVelocity(bodyAngularVelocity);
+		this.setVelocity(
+			bodySpeed * Math.cos(this.rotation + Math.PI / 2),
+			bodySpeed * Math.sin(this.rotation + Math.PI / 2)
+		);
 	}
+
 	destroy(fromScene) {
 		this.playerTurnEvent.destroy();
 
 		super.destroy(fromScene);
 	}
 
-	static shipCollide(ship1, ship2) {
-		console.log('shipCollide', ship1, ship2);
+	setShipCapitan(shipCapitan) {
+		this.shipCapitan = shipCapitan;
 	}
 
-	static shoreCollide(ship) {
-		console.log('shoreCollide', ship);
+	onPlayerTurn() {
+		this.speed = 0;
+		this.steer = 0;
+
+		const data = this.shipCapitan?.();
+		if (!data) {
+			return;
+		}
+
+		if (data.speed) {
+			this.speed = Math.round(Math.max(0, Math.min(SPEED_STEPS, data.speed)));
+		}
+		if (data.steer) {
+			this.steer = Math.round(Math.max(-STEER_STEPS, Math.min(+STEER_STEPS, data.steer)));
+		}
+	}
+
+	shipCollide(otherShip) {
+		// no collision damage, radar data and collision warning system needed first
+		// console.log('shipCollide', this, otherShip);
+	}
+
+	shoreCollide(tile) {
+		// no collision damage, radar data and collision warning system needed first
+		// console.log('shoreCollide', tile);
 	}
 
 	static createAnimations(anims) {

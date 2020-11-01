@@ -8,6 +8,19 @@ const MAP_SIZE = 30;
 
 const SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 
+function createSpinningShipCapitan() {
+	const speed = Phaser.Math.Between(2, 4); // 0 -> (+5)
+	const steer = Phaser.Math.Between(-5, +5); // (-5) <- 0 -> (+5)
+	return () => ({ speed, steer });
+}
+
+function createMadShipCapitan() {
+	return () => ({
+		speed: Phaser.Math.Between(2, 4), // 0 -> (+5)
+		steer: Phaser.Math.Between(-5, +5), // (-5) <- 0 -> (+5)
+	});
+}
+
 export default class ChaosShipsScene extends Phaser.Scene {
 	ships;
 
@@ -36,7 +49,10 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			dragY: 30,
 			angularDrag: 30,
 		});
-		this.physics.add.collider(this.ships, undefined, Ship.shipCollide);
+		this.physics.add.collider(this.ships, undefined, (ship1, ship2) => {
+			ship1.shipCollide(ship2);
+			ship2.shipCollide(ship1);
+		});
 
 		const tilemap = this.make.tilemap({ key: 'arena-map' });
 		tilemap.addTilesetImage('pirates', 'tiles');
@@ -46,7 +62,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			layer.setDepth(i);
 			layer.setScale(SCALE);
 
-			this.physics.add.collider(layer, this.ships, Ship.shoreCollide);
+			this.physics.add.collider(layer, this.ships, (ship, tile) => ship.shoreCollide(tile));
 		});
 
 		const spawnBounds = Phaser.Geom.Rectangle.Inflate(
@@ -56,7 +72,9 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		);
 		for (let i = 1; i <= 6; i++) {
 			const pos = Phaser.Geom.Rectangle.Random(spawnBounds);
-			this.ships.get(pos.x, pos.y, 'ship', `ship_${i}`);
+			const ship = this.ships.get(pos.x, pos.y, 'ship', `ship_${i}`);
+
+			ship.setShipCapitan(createMadShipCapitan());
 		}
 	}
 
