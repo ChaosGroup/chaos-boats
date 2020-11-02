@@ -4,6 +4,11 @@ const CANNONBALL_SPEED = 500;
 const FIRE_DIR_OFFSET = 30;
 const MAX_FIRE_DISTANCE = 400;
 
+const TEXTURES_MAP = {
+	default: 'cannonBall',
+	explosion: 'explosion_3',
+};
+
 export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 	firedAt = null;
 
@@ -19,7 +24,7 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 	fire(rotation) {
 		this.firedAt = this.getCenter();
 
-		this.play('ball');
+		this.setTexture('ship', TEXTURES_MAP.default);
 
 		const offset = new Phaser.Math.Vector2();
 		offset.setToPolar(rotation + Math.PI / 2, FIRE_DIR_OFFSET);
@@ -31,15 +36,15 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	stop() {
-		this.setVelocity(0, 0);
+		this.body.stop(0);
 		this.disableBody(true, true);
 
 		this.firedAt = null;
 	}
 
 	shipHit(ship) {
-		this.setVelocity(0, 0);
-		this.play('ship-hit');
+		this.body.stop(0);
+		this.setTexture('ship', TEXTURES_MAP.explosion);
 		this.scene.time.delayedCall(100, () => {
 			this.stop();
 		});
@@ -52,17 +57,5 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 		if (distance > MAX_FIRE_DISTANCE) {
 			this.stop();
 		}
-	}
-
-	static createAnimations(anims) {
-		anims.create({
-			key: 'ball',
-			frames: [{ key: 'ship', frame: 'cannonBall' }],
-		});
-
-		anims.create({
-			key: 'ship-hit',
-			frames: [{ key: 'ship', frame: 'explosion_3' }],
-		});
 	}
 }

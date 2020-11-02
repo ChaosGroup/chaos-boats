@@ -36,8 +36,6 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	}
 
 	create() {
-		Ship.createAnimations(this.anims);
-
 		this.ships = this.physics.add.group({
 			classType: Ship,
 			createCallback: ship => ship.create(),

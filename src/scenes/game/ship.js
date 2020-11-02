@@ -19,6 +19,36 @@ const STEER_STEPS = 5;
 const STEER_MAGIC = 7;
 const FIRE_SECTORS = 12;
 
+const TEXTURES_MAP = {
+	'white-ship': 'ship_1',
+	'gray-ship': 'ship_2',
+	'red-ship': 'ship_3',
+	'green-ship': 'ship_4',
+	'blue-ship': 'ship_5',
+	'yellow-ship': 'ship_6',
+
+	'white-ship-damage-1': 'ship_7',
+	'gray-ship-damage-1': 'ship_8',
+	'red-ship-damage-1': 'ship_9',
+	'green-ship-damage-1': 'ship_10',
+	'blue-ship-damage-1': 'ship_11',
+	'yellow-ship-damage-1': 'ship_12',
+
+	'white-ship-damage-2': 'ship_13',
+	'gray-ship-damage-2': 'ship_14',
+	'red-ship-damage-2': 'ship_15',
+	'green-ship-damage-2': 'ship_16',
+	'blue-ship-damage-2': 'ship_17',
+	'yellow-ship-damage-2': 'ship_18',
+
+	'white-ship-dead': 'ship_19',
+	'gray-ship-dead': 'ship_20',
+	'red-ship-dead': 'ship_21',
+	'green-ship-dead': 'ship_22',
+	'blue-ship-dead': 'ship_23',
+	'yellow-ship-dead': 'ship_24',
+};
+
 export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipCapitan;
 
@@ -59,8 +89,6 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	create() {
-		Cannonball.createAnimations(this.scene.anims);
-
 		this.body.onCollide = true;
 		this.body.onWorldBounds = true;
 
@@ -119,7 +147,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 			return;
 		}
 
-		const ball = this.cannonballs.get(this.x, this.y);
+		const ball = this.cannonballs.get(this.x, this.y, 'ship', 'cannonBall');
 		if (ball) {
 			this.cannonballs.setDepth(20, 1);
 			const fireBearing =
@@ -140,126 +168,4 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	takeBallDamage() {}
-
-	static createAnimations(anims) {
-		anims.create({
-			key: 'white-ship-idle',
-			frames: [{ key: 'ship', frame: 'ship_1' }],
-		});
-
-		anims.create({
-			key: 'gray-ship-idle',
-			frames: [{ key: 'ship', frame: 'ship_2' }],
-		});
-
-		anims.create({
-			key: 'red-ship-idle',
-			frames: [{ key: 'ship', frame: 'ship_3' }],
-		});
-
-		anims.create({
-			key: 'green-ship-idle',
-			frames: [{ key: 'ship', frame: 'ship_4' }],
-		});
-
-		anims.create({
-			key: 'blue-ship-idle',
-			frames: [{ key: 'ship', frame: 'ship_5' }],
-		});
-
-		anims.create({
-			key: 'yellow-ship-idle',
-			frames: [{ key: 'ship', frame: 'ship_6' }],
-		});
-
-		anims.create({
-			key: 'white-ship-damage-1',
-			frames: [{ key: 'ship', frame: 'ship_7' }],
-		});
-
-		anims.create({
-			key: 'gray-ship-damage-1',
-			frames: [{ key: 'ship', frame: 'ship_8' }],
-		});
-
-		anims.create({
-			key: 'red-ship-damage-1',
-			frames: [{ key: 'ship', frame: 'ship_9' }],
-		});
-
-		anims.create({
-			key: 'green-ship-damage-1',
-			frames: [{ key: 'ship', frame: 'ship_10' }],
-		});
-
-		anims.create({
-			key: 'blue-ship-damage-1',
-			frames: [{ key: 'ship', frame: 'ship_11' }],
-		});
-
-		anims.create({
-			key: 'yellow-ship-damage-1',
-			frames: [{ key: 'ship', frame: 'ship_12' }],
-		});
-
-		anims.create({
-			key: 'white-ship-damage-2',
-			frames: [{ key: 'ship', frame: 'ship_13' }],
-		});
-
-		anims.create({
-			key: 'gray-ship-damage-2',
-			frames: [{ key: 'ship', frame: 'ship_14' }],
-		});
-
-		anims.create({
-			key: 'red-ship-damage-2',
-			frames: [{ key: 'ship', frame: 'ship_15' }],
-		});
-
-		anims.create({
-			key: 'green-ship-damage-2',
-			frames: [{ key: 'ship', frame: 'ship_16' }],
-		});
-
-		anims.create({
-			key: 'blue-ship-damage-2',
-			frames: [{ key: 'ship', frame: 'ship_17' }],
-		});
-
-		anims.create({
-			key: 'yellow-ship-damage-2',
-			frames: [{ key: 'ship', frame: 'ship_18' }],
-		});
-
-		anims.create({
-			key: 'white-ship-dead',
-			frames: [{ key: 'ship', frame: 'ship_19' }],
-		});
-
-		anims.create({
-			key: 'gray-ship-dead',
-			frames: [{ key: 'ship', frame: 'ship_20' }],
-		});
-
-		anims.create({
-			key: 'red-ship-dead',
-			frames: [{ key: 'ship', frame: 'ship_21' }],
-		});
-
-		anims.create({
-			key: 'green-ship-dead',
-			frames: [{ key: 'ship', frame: 'ship_22' }],
-		});
-
-		anims.create({
-			key: 'blue-ship-dead',
-			frames: [{ key: 'ship', frame: 'ship_23' }],
-		});
-
-		anims.create({
-			key: 'yellow-ship-dead',
-			frames: [{ key: 'ship', frame: 'ship_24' }],
-		});
-	}
 }
