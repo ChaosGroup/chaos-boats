@@ -49,7 +49,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 		// HACK: auto fire
 		this.playerFireEvent = scene.time.addEvent({
-			delay: 1000,
+			delay: 500,
 			callback: this.onPlayerFire,
 			callbackScope: this,
 			loop: true,
@@ -57,6 +57,8 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	create() {
+		Cannonball.createAnimations(this.scene.anims);
+
 		this.body.onCollide = true;
 		this.body.onWorldBounds = true;
 
@@ -107,7 +109,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	onPlayerFire() {
-		const ball = this.cannonballs.get(this.x, this.y, 'ship', 'cannonBall');
+		const ball = this.cannonballs.get(this.x, this.y);
 		if (ball) {
 			this.cannonballs.setDepth(20, 1);
 			ball.fire(this.rotation);
@@ -124,9 +126,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		// console.log('shoreCollide', tile);
 	}
 
-	hit(ball) {
-		ball.stop();
-	}
+	takeBallDamage() {}
 
 	static createAnimations(anims) {
 		anims.create({

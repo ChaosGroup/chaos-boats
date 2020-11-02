@@ -19,6 +19,8 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 	fire(rotation) {
 		this.firedAt = this.getCenter();
 
+		this.play('ball');
+
 		const offset = new Phaser.Math.Vector2();
 		offset.setToPolar(rotation + Math.PI / 2, FIRE_DIR_OFFSET);
 		this.enableBody(true, this.x + offset.x, this.y + offset.y, true, true);
@@ -35,6 +37,14 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 		this.firedAt = null;
 	}
 
+	shipHit(ship) {
+		this.setVelocity(0, 0);
+		this.play('ship-hit');
+		this.scene.time.delayedCall(100, () => {
+			this.stop();
+		});
+	}
+
 	preUpdate(time, delta) {
 		super.preUpdate(time, delta);
 
@@ -42,5 +52,17 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 		if (distance > MAX_FIRE_DISTANCE) {
 			this.stop();
 		}
+	}
+
+	static createAnimations(anims) {
+		anims.create({
+			key: 'ball',
+			frames: [{ key: 'ship', frame: 'cannonBall' }],
+		});
+
+		anims.create({
+			key: 'ship-hit',
+			frames: [{ key: 'ship', frame: 'explosion_3' }],
+		});
 	}
 }

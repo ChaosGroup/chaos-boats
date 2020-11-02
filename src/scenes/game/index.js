@@ -84,8 +84,9 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			this.physics.add.collider(
 				this.ships.children.getArray().filter(s => s !== ship),
 				ship.cannonballs,
-				(ship, cannonball) => {
-					ship.hit(cannonball);
+				(ship, ball) => {
+					ball.shipHit(ship);
+					ship.takeBallDamage();
 				}
 			);
 		});
