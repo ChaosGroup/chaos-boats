@@ -11,13 +11,14 @@ const SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 function createSpinningShipCapitan() {
 	const speed = Phaser.Math.Between(2, 4); // 0 -> (+5)
 	const steer = Phaser.Math.Between(-5, +5); // (-5) <- 0 -> (+5)
-	return () => ({ speed, steer });
+	return () => ({ speed, steer, fireSector: 12 });
 }
 
 function createMadShipCapitan() {
 	return () => ({
 		speed: Phaser.Math.Between(2, 4), // 0 -> (+5)
 		steer: Phaser.Math.Between(-5, +5), // (-5) <- 0 -> (+5)
+		fireSector: Phaser.Math.Between(10, 14) % 12 || 12, // 0 -> 12
 	});
 }
 

@@ -17,14 +17,16 @@ const MAX_SPEED = 350;
 const SPEED_STEPS = 5;
 const STEER_STEPS = 5;
 const STEER_MAGIC = 7;
+const FIRE_SECTORS = 12;
 
 export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipCapitan;
 
 	cannonballs;
 
-	speed = 0;
-	steer = 0;
+	shipSpeed = 0;
+	shipSteer = 0;
+	shipFireSector = 0;
 
 	constructor(scene, x, y, texture, frame) {
 		super(scene, x, y, texture, frame);
@@ -70,8 +72,8 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	preUpdate(t, dt) {
 		super.preUpdate(t, dt);
 
-		const bodySpeed = (this.speed * MAX_SPEED) / SPEED_STEPS;
-		const bodyAngularVelocity = (this.steer * bodySpeed) / STEER_MAGIC;
+		const bodySpeed = (this.shipSpeed * MAX_SPEED) / SPEED_STEPS;
+		const bodyAngularVelocity = (this.shipSteer * bodySpeed) / STEER_MAGIC;
 
 		this.setAngularVelocity(bodyAngularVelocity);
 
@@ -92,8 +94,9 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	onPlayerTurn() {
-		this.speed = 0;
-		this.steer = 0;
+		this.shipSpeed = 0;
+		this.shipSteer = 0;
+		this.shipFire = 0;
 
 		const data = this.shipCapitan?.();
 		if (!data) {
@@ -101,18 +104,28 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		}
 
 		if (data.speed) {
-			this.speed = Math.round(Math.max(0, Math.min(SPEED_STEPS, data.speed)));
+			this.shipSpeed = Math.round(Math.max(0, Math.min(SPEED_STEPS, data.speed)));
 		}
 		if (data.steer) {
-			this.steer = Math.round(Math.max(-STEER_STEPS, Math.min(+STEER_STEPS, data.steer)));
+			this.shipSteer = Math.round(Math.max(-STEER_STEPS, Math.min(+STEER_STEPS, data.steer)));
+		}
+		if (data.fireSector) {
+			this.shipFireSector = Math.round(Math.max(0, Math.min(FIRE_SECTORS, data.fireSector)));
 		}
 	}
 
 	onPlayerFire() {
+		if (!this.shipFireSector) {
+			return;
+		}
+
 		const ball = this.cannonballs.get(this.x, this.y);
 		if (ball) {
 			this.cannonballs.setDepth(20, 1);
-			ball.fire(this.rotation);
+			const fireBearing =
+				(this.shipFireSector * ((2 * Math.PI) / FIRE_SECTORS) + this.rotation) %
+				(2 * Math.PI);
+			ball.fire(fireBearing);
 		}
 	}
 
