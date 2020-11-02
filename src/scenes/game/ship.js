@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 
+import Cannonball from './cannonball';
+
 // enum HealthState
 // {
 // 	IDLE,
@@ -17,8 +19,9 @@ const STEER_STEPS = 5;
 const STEER_MAGIC = 7;
 
 export default class Ship extends Phaser.Physics.Arcade.Sprite {
-	playerTurnEvent;
 	shipCapitan;
+
+	cannonballs;
 
 	speed = 0;
 	steer = 0;
@@ -26,9 +29,28 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	constructor(scene, x, y, texture, frame) {
 		super(scene, x, y, texture, frame);
 
+		this.cannonballs = this.scene.physics.add.group({
+			classType: Cannonball,
+			createCallback: cannonball => cannonball.create(),
+			collideWorldBounds: true,
+			maxSize: 3,
+			key: 'ship',
+			frame: 'cannonBall',
+			active: false,
+			visible: false,
+		});
+
 		this.playerTurnEvent = scene.time.addEvent({
 			delay: 750,
 			callback: this.onPlayerTurn,
+			callbackScope: this,
+			loop: true,
+		});
+
+		// HACK: auto fire
+		this.playerFireEvent = scene.time.addEvent({
+			delay: 1000,
+			callback: this.onPlayerFire,
 			callbackScope: this,
 			loop: true,
 		});
@@ -36,28 +58,29 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 	create() {
 		this.body.onCollide = true;
+		this.body.onWorldBounds = true;
 
 		// this.setBodySize(this.width * BODY_SCALE_W, this.height * BODY_SCALE_H, true);
 		// arcade physics is AABB and doesnt support body rotation, use circular body
 		this.setCircle(this.width / 2, 0, this.height / 2 - this.width / 2);
-		this.setDepth(10);
 	}
 
 	preUpdate(t, dt) {
 		super.preUpdate(t, dt);
 
-		const bodySpeed = Math.round((this.speed * MAX_SPEED) / SPEED_STEPS);
-		const bodyAngularVelocity = Math.round((this.steer * bodySpeed) / STEER_MAGIC);
+		const bodySpeed = (this.speed * MAX_SPEED) / SPEED_STEPS;
+		const bodyAngularVelocity = (this.steer * bodySpeed) / STEER_MAGIC;
 
 		this.setAngularVelocity(bodyAngularVelocity);
-		this.setVelocity(
-			bodySpeed * Math.cos(this.rotation + Math.PI / 2),
-			bodySpeed * Math.sin(this.rotation + Math.PI / 2)
-		);
+
+		const velocity = new Phaser.Math.Vector2();
+		velocity.setToPolar(this.rotation + Math.PI / 2, bodySpeed);
+		this.setVelocity(velocity.x, velocity.y);
 	}
 
 	destroy(fromScene) {
-		this.playerTurnEvent.destroy();
+		this.playerTurnEvent?.destroy();
+		this.playerFireEvent?.destroy();
 
 		super.destroy(fromScene);
 	}
@@ -83,6 +106,14 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		}
 	}
 
+	onPlayerFire() {
+		const ball = this.cannonballs.get(this.x, this.y, 'ship', 'cannonBall');
+		if (ball) {
+			this.cannonballs.setDepth(20, 1);
+			ball.fire(this.rotation);
+		}
+	}
+
 	shipCollide(otherShip) {
 		// no collision damage, radar data and collision warning system needed first
 		// console.log('shipCollide', this, otherShip);
@@ -91,6 +122,10 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shoreCollide(tile) {
 		// no collision damage, radar data and collision warning system needed first
 		// console.log('shoreCollide', tile);
+	}
+
+	hit(ball) {
+		ball.stop();
 	}
 
 	static createAnimations(anims) {

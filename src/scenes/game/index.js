@@ -49,6 +49,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			dragY: 30,
 			angularDrag: 30,
 		});
+
 		this.physics.add.collider(this.ships, undefined, (ship1, ship2) => {
 			ship1.shipCollide(ship2);
 			ship2.shipCollide(ship1);
@@ -70,12 +71,28 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			-100,
 			-100
 		);
+
 		for (let i = 1; i <= 6; i++) {
 			const pos = Phaser.Geom.Rectangle.Random(spawnBounds);
-			const ship = this.ships.get(pos.x, pos.y, 'ship', `ship_${i}`);
-
-			ship.setShipCapitan(createMadShipCapitan());
+			this.ships.get(pos.x, pos.y, 'ship', `ship_${i}`);
 		}
+		this.ships.setDepth(10, 1);
+
+		this.ships.children.iterate(ship => {
+			ship.setShipCapitan(createMadShipCapitan());
+
+			this.physics.add.collider(
+				this.ships.children.getArray().filter(s => s !== ship),
+				ship.cannonballs,
+				(ship, cannonball) => {
+					ship.hit(cannonball);
+				}
+			);
+		});
+
+		this.physics.world.on('worldbounds', body => {
+			body.gameObject.stop?.();
+		});
 	}
 
 	update() {}
