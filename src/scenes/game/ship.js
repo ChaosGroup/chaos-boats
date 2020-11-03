@@ -22,6 +22,8 @@ export const FIRE_SECTORS = 12;
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 const FIRE_BURST = 3;
 
+const BALL_DAMAGE = 1;
+
 export const TEXTURES_MAP = {
 	'white-ship': 'ship_1',
 	'gray-ship': 'ship_2',
@@ -54,6 +56,10 @@ export const TEXTURES_MAP = {
 
 export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipCapitan;
+
+	shipName;
+	shipHealth = 100;
+	texturePrefix = 'gray-ship';
 
 	cannonballs;
 
@@ -88,7 +94,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	preUpdate(t, dt) {
 		super.preUpdate(t, dt);
 
-		const bodySpeed = (this.shipSpeed * MAX_SPEED) / SPEED_STEPS;
+		const bodySpeed = this.shipSpeed * (MAX_SPEED / SPEED_STEPS);
 		const bodyAngularVelocity = (this.shipSteer * bodySpeed) / STEER_MAGIC;
 
 		this.setAngularVelocity(bodyAngularVelocity);
@@ -110,6 +116,8 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		if (!data) {
 			return;
 		}
+
+		this.shipState = data.state;
 
 		if (data.speed) {
 			this.shipSpeed = Math.round(Math.max(0, Math.min(SPEED_STEPS, data.speed)));
@@ -138,9 +146,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 						+FIRE_SECTOR_STEP / 5
 					);
 					const fireBearing =
-						(this.shipFireSector * ((2 * Math.PI) / FIRE_SECTORS) +
-							this.rotation +
-							variation) %
+						(this.shipFireSector * FIRE_SECTOR_STEP + this.rotation + variation) %
 						(2 * Math.PI);
 					ball.fire(fireBearing);
 				}
@@ -150,13 +156,26 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 	shipCollide(otherShip) {
 		// no collision damage, radar data and collision warning system needed first
-		// console.log('shipCollide', this, otherShip);
 	}
 
 	shoreCollide(tile) {
 		// no collision damage, radar data and collision warning system needed first
-		// console.log('shoreCollide', tile);
 	}
 
-	takeBallDamage() {}
+	takeBallDamage() {
+		this.shipHealth = Math.max(0, this.shipHealth - BALL_DAMAGE);
+
+		let texture;
+		if (this.shipHealth > 66) {
+			texture = `${this.texturePrefix}`;
+		} else if (this.shipHealth > 33) {
+			texture = `${this.texturePrefix}-damage-1`;
+		} else if (this.shipHealth > 0) {
+			texture = `${this.texturePrefix}-damage-2`;
+		} else {
+			texture = `${this.texturePrefix}-dead`;
+		}
+
+		this.setTexture('ship', TEXTURES_MAP[texture]);
+	}
 }

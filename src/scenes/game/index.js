@@ -23,22 +23,29 @@ function createSpinningShipCapitan() {
 		speed,
 		steer,
 		fireSector: Phaser.Math.Between(10, 14) % 12 || 12, // 0 -> 12
+		state: {},
 	});
 }
 
 function createMadShipCapitan() {
-	return ({ enemies }) => ({
-		speed: Phaser.Math.Between(2, 4), // 0 -> (+5)
-		steer: Phaser.Math.Between(-5, +5), // (-5) <- 0 -> (+5)
-		fireSector: enemies[0]?.range < 100 ? enemies[0].bearingSector : 0,
-	});
+	return ({ targets }) => {
+		const closest = targets.filter(t => t.range < 100).sort((a, b) => a.range - b - range)[0];
+
+		return {
+			speed: Phaser.Math.Between(2, 4), // 0 -> (+5)
+			steer: Phaser.Math.Between(-5, +5), // (-5) <- 0 -> (+5)
+			fireSector: closest?.bearingSector ?? 0,
+			state: {},
+		};
+	};
 }
 
-function sittingDuckCapitan({ enemies }) {
+function sittingDuckCapitan({ targets }) {
 	return {
 		speed: 0,
 		steer: 0,
-		fireSector: enemies[0]?.range < 100 ? enemies[0].bearingSector : 0,
+		fireSector: targets[0]?.range < 100 ? targets[0].bearingSector : 0,
+		state: {},
 	};
 }
 
@@ -96,10 +103,14 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		// }
 
 		const redShip = this.ships.get(200, 200, 'ship', SHIP_TEXTURES_MAP['red-ship']);
+		redShip.shipName = 'Black Pearl';
+		redShip.texturePrefix = 'red-ship';
 		redShip.setRotation(-Math.PI / 4);
 		redShip.setShipCapitan(createMadShipCapitan());
 
 		const greenShip = this.ships.get(760, 760, 'ship', SHIP_TEXTURES_MAP['green-ship']);
+		greenShip.shipName = 'Dutchman';
+		greenShip.texturePrefix = 'green-ship';
 		greenShip.setRotation((3 * Math.PI) / 4);
 		greenShip.setShipCapitan(createMadShipCapitan());
 
@@ -149,9 +160,9 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		const ownShipCenter = ship.body.center;
 		const ownShipHeading = new Phaser.Math.Vector2();
 		ownShipHeading.setToPolar(ship.rotation + Math.PI / 2);
-		const ownShipSpeed = Math.round((ship.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
+		// const ownShipSpeed = Math.round((ship.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
-		const enemies = this.ships.children
+		const targets = this.ships.children
 			.getArray()
 			.filter(s => s !== ship)
 			.map(target => {
@@ -159,19 +170,34 @@ export default class ChaosShipsScene extends Phaser.Scene {
 				const range = Math.round((los.length() * 100) / MAX_FIRE_DISTANCE); // in % of max firing distance
 				const heading = new Phaser.Math.Vector2();
 				heading.setToPolar(target.rotation + Math.PI / 2);
-				const speed = Math.round((target.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
+				// const speed = Math.round((target.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 				const bearing = Math.atan2(ownShipHeading.cross(los), ownShipHeading.dot(los));
 				const bearingSector = getSector(bearing);
 
+				const bow = Math.atan2(heading.cross(los.negate()), heading.dot(los.negate()));
+				const bowSector = getSector(bow);
+
 				return {
+					name: target.shipName,
+					health: target.shipHealth,
 					range,
-					speed,
+					speed: target.shipSpeed, //?
 					bearingSector,
+					bowSector,
 				};
 			});
 
-		return { enemies };
+		return {
+			tick: this.time.now,
+			ownShip: {
+				speed: ship.shipSpeed,
+				steer: ship.shipSteer,
+				fireSector: ship.shipFireSector,
+				state: ship.shipState,
+			},
+			targets,
+		};
 	}
 
 	update() {}
