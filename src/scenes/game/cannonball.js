@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 
-const CANNONBALL_SPEED = 500;
 const FIRE_DIR_OFFSET = 30;
-const MAX_FIRE_DISTANCE = 400;
+const CANNONBALL_SPEED = 500;
+export const MAX_FIRE_DISTANCE = 500;
 
-const TEXTURES_MAP = {
+export const TEXTURES_MAP = {
 	default: 'cannonBall',
 	explosion: 'explosion_3',
 };

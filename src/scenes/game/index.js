@@ -1,6 +1,14 @@
 import Phaser from 'phaser';
 
-import Ship from './ship';
+import Ship, {
+	MAX_SPEED,
+	SPEED_STEPS,
+	FIRE_SECTORS,
+	TEXTURES_MAP as SHIP_TEXTURES_MAP,
+} from './ship';
+import { MAX_FIRE_DISTANCE } from './cannonball';
+
+const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
@@ -11,15 +19,27 @@ const SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 function createSpinningShipCapitan() {
 	const speed = Phaser.Math.Between(2, 4); // 0 -> (+5)
 	const steer = Phaser.Math.Between(-5, +5); // (-5) <- 0 -> (+5)
-	return () => ({ speed, steer, fireSector: 12 });
+	return () => ({
+		speed,
+		steer,
+		fireSector: Phaser.Math.Between(10, 14) % 12 || 12, // 0 -> 12
+	});
 }
 
 function createMadShipCapitan() {
-	return () => ({
+	return ({ enemies }) => ({
 		speed: Phaser.Math.Between(2, 4), // 0 -> (+5)
 		steer: Phaser.Math.Between(-5, +5), // (-5) <- 0 -> (+5)
-		fireSector: Phaser.Math.Between(10, 14) % 12 || 12, // 0 -> 12
+		fireSector: enemies[0]?.range < 100 ? enemies[0].bearingSector : 0,
 	});
+}
+
+function sittingDuckCapitan({ enemies }) {
+	return {
+		speed: 0,
+		steer: 0,
+		fireSector: enemies[0]?.range < 100 ? enemies[0].bearingSector : 0,
+	};
 }
 
 export default class ChaosShipsScene extends Phaser.Scene {
@@ -65,21 +85,27 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			this.physics.add.collider(layer, this.ships, (ship, tile) => ship.shoreCollide(tile));
 		});
 
-		const spawnBounds = Phaser.Geom.Rectangle.Inflate(
-			Phaser.Geom.Rectangle.Clone(this.physics.world.bounds),
-			-100,
-			-100
-		);
+		// const spawnBounds = Phaser.Geom.Rectangle.Inflate(
+		// 	Phaser.Geom.Rectangle.Clone(this.physics.world.bounds),
+		// 	-100,
+		// 	-100
+		// );
+		// for (let i = 1; i <= 2; i++) {
+		// 	const pos = Phaser.Geom.Rectangle.Random(spawnBounds);
+		// 	this.ships.get(pos.x, pos.y, 'ship', `ship_${i + 2}`);
+		// }
 
-		for (let i = 1; i <= 6; i++) {
-			const pos = Phaser.Geom.Rectangle.Random(spawnBounds);
-			this.ships.get(pos.x, pos.y, 'ship', `ship_${i}`);
-		}
+		const redShip = this.ships.get(200, 200, 'ship', SHIP_TEXTURES_MAP['red-ship']);
+		redShip.setRotation(-Math.PI / 4);
+		redShip.setShipCapitan(createMadShipCapitan());
+
+		const greenShip = this.ships.get(760, 760, 'ship', SHIP_TEXTURES_MAP['green-ship']);
+		greenShip.setRotation((3 * Math.PI) / 4);
+		greenShip.setShipCapitan(createMadShipCapitan());
+
 		this.ships.setDepth(10, 1);
 
 		this.ships.children.iterate(ship => {
-			ship.setShipCapitan(createMadShipCapitan());
-
 			this.physics.add.collider(
 				this.ships.children.getArray().filter(s => s !== ship),
 				ship.cannonballs,
@@ -93,7 +119,64 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		this.physics.world.on('worldbounds', body => {
 			body.gameObject.stop?.();
 		});
+
+		const playersTurnEvent = this.time.addEvent({
+			delay: 750,
+			startAt: 100,
+			callback: this.onPlayersTurn,
+			callbackScope: this,
+			loop: true,
+		});
+
+		this.events.on('destroy', () => {
+			playersTurnEvent.destroy();
+		});
+	}
+
+	onPlayersTurn() {
+		this.ships.children.iterate(ship => {
+			// isolate error domains
+			this.time.delayedCall(10, () => {
+				const capitan = ship.shipCapitan;
+				const inTurnData = this.collectTurnData(ship);
+				const outTurnData = capitan(inTurnData);
+				ship.onPlayerTurn(outTurnData);
+			});
+		});
+	}
+
+	collectTurnData(ship) {
+		const ownShipCenter = ship.body.center;
+		const ownShipHeading = new Phaser.Math.Vector2();
+		ownShipHeading.setToPolar(ship.rotation + Math.PI / 2);
+		const ownShipSpeed = Math.round((ship.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
+
+		const enemies = this.ships.children
+			.getArray()
+			.filter(s => s !== ship)
+			.map(target => {
+				const los = target.body.center.clone().subtract(ownShipCenter);
+				const range = Math.round((los.length() * 100) / MAX_FIRE_DISTANCE); // in % of max firing distance
+				const heading = new Phaser.Math.Vector2();
+				heading.setToPolar(target.rotation + Math.PI / 2);
+				const speed = Math.round((target.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
+
+				const bearing = Math.atan2(ownShipHeading.cross(los), ownShipHeading.dot(los));
+				const bearingSector = getSector(bearing);
+
+				return {
+					range,
+					speed,
+					bearingSector,
+				};
+			});
+
+		return { enemies };
 	}
 
 	update() {}
+}
+
+function getSector(angle) {
+	return (Math.round(angle / FIRE_SECTOR_STEP) + FIRE_SECTORS) % FIRE_SECTORS || FIRE_SECTORS;
 }
