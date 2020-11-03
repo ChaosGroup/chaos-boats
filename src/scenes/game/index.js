@@ -158,8 +158,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 
 	collectTurnData(ship) {
 		const ownShipCenter = ship.body.center;
-		const ownShipHeading = new Phaser.Math.Vector2();
-		ownShipHeading.setToPolar(ship.rotation + Math.PI / 2);
+		const ownShipHeading = ship.body.velocity.normalize();
 		// const ownShipSpeed = Math.round((ship.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 		const targets = this.ships.children
@@ -168,8 +167,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			.map(target => {
 				const los = target.body.center.clone().subtract(ownShipCenter);
 				const range = Math.round((los.length() * 100) / MAX_FIRE_DISTANCE); // in % of max firing distance
-				const heading = new Phaser.Math.Vector2();
-				heading.setToPolar(target.rotation + Math.PI / 2);
+				const heading = target.body.velocity.normalize();
 				// const speed = Math.round((target.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 				const bearing = Math.atan2(ownShipHeading.cross(los), ownShipHeading.dot(los));
