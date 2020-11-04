@@ -74,7 +74,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 			classType: Cannonball,
 			createCallback: cannonball => cannonball.create(),
 			collideWorldBounds: true,
-			maxSize: 6,
+			maxSize: 4,
 			key: 'ship',
 			frame: CANNONBALL_TEXTURES_MAP.default,
 			active: false,
@@ -138,7 +138,13 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 		for (let i = 0; i < FIRE_BURST; i++) {
 			this.scene.time.delayedCall(100 * i, () => {
-				const ball = this.cannonballs.get(this.x, this.y, 'ship', 'cannonBall');
+				const ball = this.cannonballs.getFirstDead(
+					true,
+					this.x,
+					this.y,
+					'ship',
+					'cannonBall'
+				);
 				this.cannonballs.setDepth(20, 1);
 				if (ball) {
 					const variation = Phaser.Math.FloatBetween(
