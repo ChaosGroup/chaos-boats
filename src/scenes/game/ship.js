@@ -23,6 +23,7 @@ const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 const FIRE_BURST = 3;
 
 const BALL_DAMAGE = 1;
+const SHIP_HEALTH = 100;
 
 export const TEXTURES_MAP = {
 	'white-ship': 'ship_1',
@@ -58,7 +59,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipCapitan;
 
 	shipName;
-	shipHealth = 100;
+	shipHealth = SHIP_HEALTH;
 	texturePrefix = 'gray-ship';
 
 	cannonballs;
@@ -120,13 +121,13 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		this.shipState = data.state;
 
 		if (data.speed) {
-			this.shipSpeed = Math.round(Math.max(0, Math.min(SPEED_STEPS, data.speed)));
+			this.shipSpeed = Phaser.Math.Clamp(Math.round(data.speed), 0, SPEED_STEPS);
 		}
 		if (data.steer) {
-			this.shipSteer = Math.round(Math.max(-STEER_STEPS, Math.min(+STEER_STEPS, data.steer)));
+			this.shipSteer = Phaser.Math.Clamp(Math.round(data.steer), -STEER_STEPS, +STEER_STEPS);
 		}
 		if (data.fireSector) {
-			this.shipFireSector = Math.round(Math.max(0, Math.min(FIRE_SECTORS, data.fireSector)));
+			this.shipFireSector = Phaser.Math.Clamp(Math.round(data.fireSector), 0, FIRE_SECTORS);
 			this.onPlayerFire();
 		}
 	}
