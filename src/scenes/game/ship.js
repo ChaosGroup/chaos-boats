@@ -5,17 +5,6 @@ import Cannonball, {
 	TEXTURE_ATLAS as CANNONBALL_TEXTURE_ATLAS,
 } from './cannonball';
 
-// enum HealthState
-// {
-// 	IDLE,
-// 	DAMAGE_1,
-// 	DAMAGE_2,
-// 	DEAD
-// }
-
-// const BODY_SCALE_W = 0.7;
-// const BODY_SCALE_H = 0.8;
-
 export const MAX_SPEED = 350;
 export const SPEED_STEPS = 5;
 const RUDDER_STEPS = 3;
@@ -25,7 +14,7 @@ export const FIRE_SECTORS = 12;
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 const FIRE_BURST = 3;
 
-const BALL_DAMAGE = 1;
+const BALL_DAMAGE = 10; // HACK:
 const SHIP_HEALTH = 100;
 
 export const TEXTURE_ATLAS = 'ship';
@@ -35,42 +24,42 @@ export const TEXTURES_MAP = {
 		default: 'ship_1',
 		damage1: 'ship_7',
 		damage2: 'ship_13',
-		dead: 'ship_19',
+		sunk: 'ship_19',
 	},
 	grayShip: {
 		name: 'Black Pearl',
 		default: 'ship_2',
 		damage1: 'ship_8',
 		damage2: 'ship_14',
-		dead: 'ship_20',
+		sunk: 'ship_20',
 	},
 	redShip: {
 		name: 'Royal Fortune',
 		default: 'ship_3',
 		damage1: 'ship_9',
 		damage2: 'ship_15',
-		dead: 'ship_21',
+		sunk: 'ship_21',
 	},
 	greenShip: {
 		name: 'Queen Anne’s Revenge',
 		default: 'ship_4',
 		damage1: 'ship_10',
 		damage2: 'ship_16',
-		dead: 'ship_22',
+		sunk: 'ship_22',
 	},
 	blueShip: {
 		name: 'Jolly Roger',
 		default: 'ship_5',
 		damage1: 'ship_11',
 		damage2: 'ship_17',
-		dead: 'ship_23',
+		sunk: 'ship_23',
 	},
 	yellowShip: {
 		name: 'Whydah',
 		default: 'ship_6',
 		damage1: 'ship_12',
 		damage2: 'ship_18',
-		dead: 'ship_24',
+		sunk: 'ship_24',
 	},
 };
 
@@ -111,7 +100,6 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		this.body.onCollide = true;
 		this.body.onWorldBounds = true;
 
-		// this.setBodySize(this.width * BODY_SCALE_W, this.height * BODY_SCALE_H, true);
 		// arcade physics is AABB and doesnt support body rotation, use circular body
 		this.setCircle(this.width / 2, 0, this.height / 2 - this.width / 2);
 	}
@@ -155,7 +143,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		this.shipRudder = 0;
 		this.shipFire = 0;
 
-		if (!data) {
+		if (!this.shipHealth || !data) {
 			return;
 		}
 
@@ -226,7 +214,10 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		} else if (this.shipHealth > 0) {
 			this.setTexture(TEXTURE_ATLAS, shipTexture.damage2);
 		} else {
-			this.setTexture(TEXTURE_ATLAS, shipTexture.dead);
+			this.setTexture(TEXTURE_ATLAS, shipTexture.sunk);
+
+			this.disableBody(false, false);
+			this.setDepth(9);
 		}
 	}
 }

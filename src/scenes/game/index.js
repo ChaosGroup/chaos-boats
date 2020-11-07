@@ -169,33 +169,35 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			760,
 			760,
 			SHIP_TEXTURES_ATLAS,
-			SHIP_TEXTURES_MAP.greenShip.default
+			SHIP_TEXTURES_MAP.blueShip.default
 		);
-		greenShip.shipTexture = SHIP_TEXTURES_MAP.greenShip;
+		greenShip.shipTexture = SHIP_TEXTURES_MAP.blueShip;
 		greenShip.shipPlayer = createCapitanJackSparrow();
 		greenShip.setRotation((3 * Math.PI) / 4);
 	}
 
 	onPlayersTurn() {
 		this.ships.children.iterate(ship => {
-			// isolate error domains
-			this.time.delayedCall(10, () => {
-				const playerTurn = ship.shipPlayer?.(this.collectTurnData(ship));
-				if (playerTurn) {
-					ship.onPlayerTurn(playerTurn);
-				}
-			});
+			if (ship.shipHealth > 0) {
+				// isolate error domains
+				this.time.delayedCall(10, () => {
+					const playerTurn = ship.shipPlayer?.(this.collectTurnData(ship));
+					if (playerTurn) {
+						ship.onPlayerTurn(playerTurn);
+					}
+				});
+			}
 		});
 	}
 
-	collectTurnData(ship) {
-		const ownShipCenter = ship.body.center.clone();
-		const ownShipHeading = ship.body.velocity.clone().normalize();
+	collectTurnData(ownShip) {
+		const ownShipCenter = ownShip.body.center.clone();
+		const ownShipHeading = ownShip.body.velocity.clone().normalize();
 		// const ownShipSpeed = Math.round((ship.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 		const targets = this.ships.children
 			.getArray()
-			.filter(s => s !== ship)
+			.filter(target => target !== ownShip && target.shipHealth > 0)
 			.map(target => {
 				const los = target.body.center.clone().subtract(ownShipCenter);
 				const range = Math.round((los.length() * 100) / MAX_FIRE_DISTANCE); // in % of max firing distance
@@ -221,13 +223,13 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		return {
 			tick: this.time.now,
 			ownShip: {
-				name: ship.shipTexture.name,
-				health: ship.shipHealth,
-				speed: ship.shipSpeed,
-				rudder: ship.shipRudder,
-				fireSector: ship.shipFireSector,
-				blockedSector: ship.shipBlockedSector,
-				state: ship.shipState,
+				name: ownShip.shipTexture.name,
+				health: ownShip.shipHealth,
+				speed: ownShip.shipSpeed,
+				rudder: ownShip.shipRudder,
+				fireSector: ownShip.shipFireSector,
+				blockedSector: ownShip.shipBlockedSector,
+				state: ownShip.shipState,
 			},
 			targets,
 		};
