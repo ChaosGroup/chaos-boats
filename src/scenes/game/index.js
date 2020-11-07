@@ -1,7 +1,11 @@
 import Phaser from 'phaser';
 
-import Ship, { TEXTURES_MAP as SHIP_TEXTURES_MAP, getSector } from './ship';
-import { MAX_FIRE_DISTANCE } from './cannonball';
+import Ship, {
+	getSector,
+	TEXTURES_MAP as SHIP_TEXTURES_MAP,
+	TEXTURE_ATLAS as SHIP_TEXTURES_ATLAS,
+} from './ship';
+import Cannonball, { MAX_FIRE_DISTANCE } from './cannonball';
 
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
@@ -22,7 +26,7 @@ function createSpinningShipCapitan() {
 
 function createCapitanJackSparrow() {
 	return ({ ownShip, targets }) => {
-		const closest = targets.filter(t => t.range < 100).sort((a, b) => a.range - b - range)[0];
+		const closest = targets.filter(t => t.range < 100).sort((a, b) => a.range - b.range)[0];
 		const fireSector = closest?.bearingSector ?? 0;
 
 		// 0 -> (+5)
@@ -52,7 +56,7 @@ function createCapitanJackSparrow() {
 			fireSector,
 
 			state: {
-				engaging: closest?.shipName ?? null,
+				engaging: closest?.name ?? null,
 			},
 		};
 	};
@@ -99,30 +103,9 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			this.physics.add.collider(layer, this.ships, (ship, tile) => ship.shoreCollide(tile));
 		});
 
-		// const spawnBounds = Phaser.Geom.Rectangle.Inflate(
-		// 	Phaser.Geom.Rectangle.Clone(this.physics.world.bounds),
-		// 	-100,
-		// 	-100
-		// );
-		// for (let i = 1; i <= 2; i++) {
-		// 	const pos = Phaser.Geom.Rectangle.Random(spawnBounds);
-		// 	this.ships.get(pos.x, pos.y, 'ship', `ship_${i + 2}`);
-		// }
-
-		const redShip = this.ships.get(200, 200, 'ship', SHIP_TEXTURES_MAP['red-ship']);
-		redShip.shipName = 'Black Pearl';
-		redShip.shipPlayer = createCapitanJackSparrow();
-		redShip.texturePrefix = 'red-ship';
-		redShip.setRotation((-1 * Math.PI) / 4);
-
-		const greenShip = this.ships.get(760, 760, 'ship', SHIP_TEXTURES_MAP['green-ship']);
-		greenShip.shipName = 'Dutchman';
-		greenShip.shipPlayer = createCapitanJackSparrow();
-		greenShip.texturePrefix = 'green-ship';
-		greenShip.setRotation((3 * Math.PI) / 4);
+		this.createTwoShipsBattle();
 
 		this.ships.setDepth(10, 1);
-
 		this.ships.children.iterate(ship => {
 			this.physics.add.collider(
 				this.ships.children.getArray().filter(s => s !== ship),
@@ -134,9 +117,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			);
 		});
 
-		this.physics.world.on('worldbounds', body => {
-			body.gameObject.stop?.();
-		});
+		Cannonball.DieOnWorldBounds(this);
 
 		const playersTurnEvent = this.time.addEvent({
 			delay: 500,
@@ -149,6 +130,50 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		this.events.on('destroy', () => {
 			playersTurnEvent.destroy();
 		});
+	}
+
+	createAllShipsBatlle() {
+		const spawnBounds = Phaser.Geom.Rectangle.Inflate(
+			Phaser.Geom.Rectangle.Clone(this.physics.world.bounds),
+			-100,
+			-100
+		);
+		[
+			SHIP_TEXTURES_MAP.whiteShip,
+			SHIP_TEXTURES_MAP.grayShip,
+			SHIP_TEXTURES_MAP.redShip,
+			SHIP_TEXTURES_MAP.greenShip,
+			SHIP_TEXTURES_MAP.blueShip,
+			SHIP_TEXTURES_MAP.yellowShip,
+		].forEach((shipTexture, i) => {
+			const pos = Phaser.Geom.Rectangle.Random(spawnBounds);
+			const ship = this.ships.get(pos.x, pos.y, SHIP_TEXTURES_ATLAS, shipTexture.default);
+			ship.shipTexture = shipTexture;
+			ship.shipPlayer = createCapitanJackSparrow();
+			ship.setRotation((i * Math.PI) / 4);
+		});
+	}
+
+	createTwoShipsBattle() {
+		const redShip = this.ships.get(
+			200,
+			200,
+			SHIP_TEXTURES_ATLAS,
+			SHIP_TEXTURES_MAP.redShip.default
+		);
+		redShip.shipTexture = SHIP_TEXTURES_MAP.redShip;
+		redShip.shipPlayer = createCapitanJackSparrow();
+		redShip.setRotation((-1 * Math.PI) / 4);
+
+		const greenShip = this.ships.get(
+			760,
+			760,
+			SHIP_TEXTURES_ATLAS,
+			SHIP_TEXTURES_MAP.greenShip.default
+		);
+		greenShip.shipTexture = SHIP_TEXTURES_MAP.greenShip;
+		greenShip.shipPlayer = createCapitanJackSparrow();
+		greenShip.setRotation((3 * Math.PI) / 4);
 	}
 
 	onPlayersTurn() {
@@ -184,7 +209,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 				const bowSector = getSector(bow);
 
 				return {
-					name: target.shipName,
+					name: target.shipTexture.name,
 					health: target.shipHealth,
 					range,
 					speed: target.shipSpeed,
@@ -196,7 +221,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		return {
 			tick: this.time.now,
 			ownShip: {
-				name: ship.shipName,
+				name: ship.shipTexture.name,
 				health: ship.shipHealth,
 				speed: ship.shipSpeed,
 				rudder: ship.shipRudder,

@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 
-import Cannonball, { TEXTURES_MAP as CANNONBALL_TEXTURES_MAP } from './cannonball';
+import Cannonball, {
+	TEXTURES_MAP as CANNONBALL_TEXTURES_MAP,
+	TEXTURE_ATLAS as CANNONBALL_TEXTURE_ATLAS,
+} from './cannonball';
 
 // enum HealthState
 // {
@@ -16,7 +19,7 @@ import Cannonball, { TEXTURES_MAP as CANNONBALL_TEXTURES_MAP } from './cannonbal
 export const MAX_SPEED = 350;
 export const SPEED_STEPS = 5;
 const RUDDER_STEPS = 3;
-const RUDDER_FACTOR = 4;
+const RUDDER_FACTOR = 0.25;
 export const FIRE_SECTORS = 12;
 
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
@@ -25,34 +28,50 @@ const FIRE_BURST = 3;
 const BALL_DAMAGE = 1;
 const SHIP_HEALTH = 100;
 
+export const TEXTURE_ATLAS = 'ship';
 export const TEXTURES_MAP = {
-	'white-ship': 'ship_1',
-	'gray-ship': 'ship_2',
-	'red-ship': 'ship_3',
-	'green-ship': 'ship_4',
-	'blue-ship': 'ship_5',
-	'yellow-ship': 'ship_6',
-
-	'white-ship-damage-1': 'ship_7',
-	'gray-ship-damage-1': 'ship_8',
-	'red-ship-damage-1': 'ship_9',
-	'green-ship-damage-1': 'ship_10',
-	'blue-ship-damage-1': 'ship_11',
-	'yellow-ship-damage-1': 'ship_12',
-
-	'white-ship-damage-2': 'ship_13',
-	'gray-ship-damage-2': 'ship_14',
-	'red-ship-damage-2': 'ship_15',
-	'green-ship-damage-2': 'ship_16',
-	'blue-ship-damage-2': 'ship_17',
-	'yellow-ship-damage-2': 'ship_18',
-
-	'white-ship-dead': 'ship_19',
-	'gray-ship-dead': 'ship_20',
-	'red-ship-dead': 'ship_21',
-	'green-ship-dead': 'ship_22',
-	'blue-ship-dead': 'ship_23',
-	'yellow-ship-dead': 'ship_24',
+	whiteShip: {
+		name: 'Adventure Galley',
+		default: 'ship_1',
+		damage1: 'ship_7',
+		damage2: 'ship_13',
+		dead: 'ship_19',
+	},
+	grayShip: {
+		name: 'Black Pearl',
+		default: 'ship_2',
+		damage1: 'ship_8',
+		damage2: 'ship_14',
+		dead: 'ship_20',
+	},
+	redShip: {
+		name: 'Royal Fortune',
+		default: 'ship_3',
+		damage1: 'ship_9',
+		damage2: 'ship_15',
+		dead: 'ship_21',
+	},
+	greenShip: {
+		name: 'Queen Anne’s Revenge',
+		default: 'ship_4',
+		damage1: 'ship_10',
+		damage2: 'ship_16',
+		dead: 'ship_22',
+	},
+	blueShip: {
+		name: 'Jolly Roger',
+		default: 'ship_5',
+		damage1: 'ship_11',
+		damage2: 'ship_17',
+		dead: 'ship_23',
+	},
+	yellowShip: {
+		name: 'Whydah',
+		default: 'ship_6',
+		damage1: 'ship_12',
+		damage2: 'ship_18',
+		dead: 'ship_24',
+	},
 };
 
 export function getSector(angle) {
@@ -62,9 +81,8 @@ export function getSector(angle) {
 export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipPlayer;
 
-	shipName;
 	shipHealth = SHIP_HEALTH;
-	texturePrefix = 'gray-ship';
+	shipTexture = TEXTURES_MAP.grayShip;
 
 	cannonballs;
 
@@ -105,7 +123,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 		const heading = this.rotation + Math.PI / 2;
 		const bodySpeed = this.shipSpeed * (MAX_SPEED / SPEED_STEPS);
-		const bodyAngularVelocity = (this.shipRudder * bodySpeed) / RUDDER_FACTOR;
+		const bodyAngularVelocity = this.shipRudder * bodySpeed * RUDDER_FACTOR;
 
 		this.body.angularVelocity = bodyAngularVelocity;
 		this.body.velocity.setToPolar(heading, bodySpeed);
@@ -170,7 +188,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 					true,
 					this.x,
 					this.y,
-					'ship',
+					CANNONBALL_TEXTURE_ATLAS,
 					CANNONBALL_TEXTURES_MAP.default
 				);
 				this.cannonballs.setDepth(20, 1);
@@ -200,17 +218,15 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	takeBallDamage() {
 		this.shipHealth = Math.max(0, this.shipHealth - BALL_DAMAGE);
 
-		let texture;
+		const shipTexture = this.shipTexture ?? TEXTURES_MAP.grayShip;
 		if (this.shipHealth > 66) {
-			texture = `${this.texturePrefix}`;
+			this.setTexture(TEXTURE_ATLAS, shipTexture.default);
 		} else if (this.shipHealth > 33) {
-			texture = `${this.texturePrefix}-damage-1`;
+			this.setTexture(TEXTURE_ATLAS, shipTexture.damage1);
 		} else if (this.shipHealth > 0) {
-			texture = `${this.texturePrefix}-damage-2`;
+			this.setTexture(TEXTURE_ATLAS, shipTexture.damage2);
 		} else {
-			texture = `${this.texturePrefix}-dead`;
+			this.setTexture(TEXTURE_ATLAS, shipTexture.dead);
 		}
-
-		this.setTexture('ship', TEXTURES_MAP[texture]);
 	}
 }

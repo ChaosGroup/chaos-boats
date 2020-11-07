@@ -4,6 +4,7 @@ const FIRE_DIR_OFFSET = 30;
 const CANNONBALL_SPEED = 500;
 export const MAX_FIRE_DISTANCE = 500;
 
+export const TEXTURE_ATLAS = 'ship';
 export const TEXTURES_MAP = {
 	default: 'cannonBall',
 	explosion: 'explosion_3',
@@ -15,7 +16,7 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 	static GroupConfig = {
 		classType: Cannonball,
 		createCallback: cannonball => cannonball.create(),
-		key: 'ship',
+		key: TEXTURE_ATLAS,
 		frame: TEXTURES_MAP.default,
 		maxSize: 3,
 		collideWorldBounds: true,
@@ -36,12 +37,14 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 	create() {
 		this.body.onCollide = true;
 		this.body.onWorldBounds = true;
+
+		this.setCircle(this.width / 2, 0, 0);
 	}
 
 	fire(bearing) {
 		this.firedAt = this.getCenter();
 
-		this.setTexture('ship', TEXTURES_MAP.default);
+		this.setTexture(TEXTURE_ATLAS, TEXTURES_MAP.default);
 
 		const offset = new Phaser.Math.Vector2().setToPolar(bearing, FIRE_DIR_OFFSET);
 		this.enableBody(true, this.x + offset.x, this.y + offset.y, true, true);
@@ -56,7 +59,7 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 
 	shipHit(ship) {
 		this.disableBody(true, false);
-		this.setTexture('ship', TEXTURES_MAP.explosion);
+		this.setTexture(TEXTURE_ATLAS, TEXTURES_MAP.explosion);
 		this.scene.time.delayedCall(100, () => {
 			this.stop();
 		});
@@ -69,5 +72,13 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 		if (distance > MAX_FIRE_DISTANCE) {
 			this.stop();
 		}
+	}
+
+	static DieOnWorldBounds(scene) {
+		scene.physics.world.on(Phaser.Physics.Arcade.Events.WORLD_BOUNDS, body => {
+			if (body.gameObject instanceof Cannonball) {
+				body.gameObject.stop();
+			}
+		});
 	}
 }
