@@ -4,7 +4,7 @@ import { Game } from './scenes';
 
 const CONFIG = {
 	title: 'Chaos@JsTalks2020',
-	type: Phaser.CANVAS,
+	type: Phaser.AUTO,
 	parent: 'phaser-container',
 	width: 960,
 	height: 960,

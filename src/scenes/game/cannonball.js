@@ -12,6 +12,23 @@ export const TEXTURES_MAP = {
 export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 	firedAt = null;
 
+	static GroupConfig = {
+		classType: Cannonball,
+		createCallback: cannonball => cannonball.create(),
+		key: 'ship',
+		frame: TEXTURES_MAP.default,
+		maxSize: 3,
+		collideWorldBounds: true,
+		allowGravity: false,
+		allowDrag: true,
+		bounceX: 0,
+		bounceY: 0,
+		dragX: 40,
+		dragY: 40,
+		active: false,
+		visible: false,
+	};
+
 	constructor(scene, x, y, key, frame) {
 		super(scene, x, y, key, frame);
 	}
@@ -26,13 +43,13 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 
 		this.setTexture('ship', TEXTURES_MAP.default);
 
-		const offset = new Phaser.Math.Vector2();
-		offset.setToPolar(rotation + Math.PI / 2, FIRE_DIR_OFFSET);
+		const offset = new Phaser.Math.Vector2().setToPolar(
+			rotation + Math.PI / 2,
+			FIRE_DIR_OFFSET
+		);
 		this.enableBody(true, this.x + offset.x, this.y + offset.y, true, true);
 
-		const velocity = new Phaser.Math.Vector2();
-		velocity.setToPolar(rotation + Math.PI / 2, CANNONBALL_SPEED);
-		this.setVelocity(velocity.x, velocity.y);
+		this.body.velocity.setToPolar(rotation + Math.PI / 2, CANNONBALL_SPEED);
 	}
 
 	stop() {

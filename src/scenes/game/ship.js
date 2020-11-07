@@ -16,7 +16,7 @@ import Cannonball, { TEXTURES_MAP as CANNONBALL_TEXTURES_MAP } from './cannonbal
 export const MAX_SPEED = 350;
 export const SPEED_STEPS = 5;
 const STEER_STEPS = 5;
-const STEER_MAGIC = 7;
+const STEER_FACTOR = 7;
 export const FIRE_SECTORS = 12;
 
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
@@ -55,8 +55,12 @@ export const TEXTURES_MAP = {
 	'yellow-ship-dead': 'ship_24',
 };
 
+export function getSector(angle) {
+	return (Math.round(angle / FIRE_SECTOR_STEP) + FIRE_SECTORS) % FIRE_SECTORS || FIRE_SECTORS;
+}
+
 export default class Ship extends Phaser.Physics.Arcade.Sprite {
-	shipCapitan;
+	shipPlayer;
 
 	shipName;
 	shipHealth = SHIP_HEALTH;
@@ -67,20 +71,22 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipSpeed = 0;
 	shipSteer = 0;
 	shipFireSector = 0;
+	shipBlockedSector = 0;
+
+	static GroupConfig = {
+		classType: Ship,
+		createCallback: ship => ship.create(),
+		collideWorldBounds: true,
+		allowRotation: true,
+		allowGravity: false,
+		bounceX: 0,
+		bounceY: 0,
+	};
 
 	constructor(scene, x, y, texture, frame) {
 		super(scene, x, y, texture, frame);
 
-		this.cannonballs = this.scene.physics.add.group({
-			classType: Cannonball,
-			createCallback: cannonball => cannonball.create(),
-			collideWorldBounds: true,
-			maxSize: 4,
-			key: 'ship',
-			frame: CANNONBALL_TEXTURES_MAP.default,
-			active: false,
-			visible: false,
-		});
+		this.cannonballs = this.scene.physics.add.group(Cannonball.GroupConfig);
 	}
 
 	create() {
@@ -95,18 +101,34 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	preUpdate(t, dt) {
 		super.preUpdate(t, dt);
 
+		this.setBlockedSector();
+
 		const bodySpeed = this.shipSpeed * (MAX_SPEED / SPEED_STEPS);
-		const bodyAngularVelocity = (this.shipSteer * bodySpeed) / STEER_MAGIC;
+		const bodyAngularVelocity = (this.shipSteer * bodySpeed) / STEER_FACTOR;
 
-		this.setAngularVelocity(bodyAngularVelocity);
-
-		const velocity = new Phaser.Math.Vector2();
-		velocity.setToPolar(this.rotation + Math.PI / 2, bodySpeed);
-		this.setVelocity(velocity.x, velocity.y);
+		this.body.angularVelocity = bodyAngularVelocity;
+		this.body.velocity.setToPolar(this.rotation + Math.PI / 2, bodySpeed);
 	}
 
-	setShipCapitan(shipCapitan) {
-		this.shipCapitan = shipCapitan;
+	setBlockedSector() {
+		this.shipBlockedSector = 0;
+
+		if (this.shipSpeed === 0) {
+			return;
+		}
+
+		if (this.body.velocity.length() < 1) {
+			this.shipBlockedSector = FIRE_SECTORS;
+			return;
+		}
+
+		const heading = new Phaser.Math.Vector2().setToPolar(this.rotation + Math.PI / 2);
+		const velocity = this.body.velocity.clone().normalize();
+		const blockedSector = getSector(Math.atan2(velocity.cross(heading), velocity.dot(heading)));
+		if (blockedSector !== FIRE_SECTORS) {
+			this.shipBlockedSector = blockedSector;
+			return;
+		}
 	}
 
 	onPlayerTurn(data) {
@@ -144,7 +166,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 					this.x,
 					this.y,
 					'ship',
-					'cannonBall'
+					CANNONBALL_TEXTURES_MAP.default
 				);
 				this.cannonballs.setDepth(20, 1);
 				if (ball) {

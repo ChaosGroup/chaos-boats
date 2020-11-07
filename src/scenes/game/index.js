@@ -1,14 +1,7 @@
 import Phaser from 'phaser';
 
-import Ship, {
-	MAX_SPEED,
-	SPEED_STEPS,
-	FIRE_SECTORS,
-	TEXTURES_MAP as SHIP_TEXTURES_MAP,
-} from './ship';
+import Ship, { TEXTURES_MAP as SHIP_TEXTURES_MAP, getSector } from './ship';
 import { MAX_FIRE_DISTANCE } from './cannonball';
-
-const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
@@ -27,15 +20,40 @@ function createSpinningShipCapitan() {
 	});
 }
 
-function createMadShipCapitan() {
-	return ({ targets }) => {
+function createCapitanJackSparrow() {
+	return ({ ownShip, targets }) => {
 		const closest = targets.filter(t => t.range < 100).sort((a, b) => a.range - b - range)[0];
+		const fireSector = closest?.bearingSector ?? 0;
+
+		// 0 -> (+5)
+		let speed = Phaser.Math.Between(2, 5);
+		if (closest?.range < 30) {
+			speed = 5;
+		}
+
+		// (-5) <- 0 -> (+5)
+		let steer = Phaser.Math.Between(-5, +5);
+		if (ownShip.blockedSector) {
+			speed = 5;
+
+			if (ownShip.blockedSector === 12) {
+				// pick left or right
+				steer = 5 * Phaser.Math.Between(1, 10) > 3 ? 1 : -1;
+			} else if (ownShip.blockedSector >= 9) {
+				steer = 5; // turn right
+			} else if (ownShip.blockedSector <= 3) {
+				steer = -5; // turn left
+			}
+		}
 
 		return {
-			speed: Phaser.Math.Between(2, 4), // 0 -> (+5)
-			steer: Phaser.Math.Between(-5, +5), // (-5) <- 0 -> (+5)
-			fireSector: closest?.bearingSector ?? 0,
-			state: {},
+			speed,
+			steer,
+			fireSector,
+
+			state: {
+				engaging: closest?.shipName ?? null,
+			},
 		};
 	};
 }
@@ -63,18 +81,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	}
 
 	create() {
-		this.ships = this.physics.add.group({
-			classType: Ship,
-			createCallback: ship => ship.create(),
-			collideWorldBounds: true,
-			allowDrag: true,
-			allowRotation: true,
-			bounceX: 0.3,
-			bounceY: 0.3,
-			dragX: 30,
-			dragY: 30,
-			angularDrag: 30,
-		});
+		this.ships = this.physics.add.group(Ship.GroupConfig);
 
 		this.physics.add.collider(this.ships, undefined, (ship1, ship2) => {
 			ship1.shipCollide(ship2);
@@ -104,15 +111,15 @@ export default class ChaosShipsScene extends Phaser.Scene {
 
 		const redShip = this.ships.get(200, 200, 'ship', SHIP_TEXTURES_MAP['red-ship']);
 		redShip.shipName = 'Black Pearl';
+		redShip.shipPlayer = createCapitanJackSparrow();
 		redShip.texturePrefix = 'red-ship';
-		redShip.setRotation(-Math.PI / 4);
-		redShip.setShipCapitan(createMadShipCapitan());
+		redShip.setRotation((-1 * Math.PI) / 4);
 
 		const greenShip = this.ships.get(760, 760, 'ship', SHIP_TEXTURES_MAP['green-ship']);
 		greenShip.shipName = 'Dutchman';
+		greenShip.shipPlayer = createCapitanJackSparrow();
 		greenShip.texturePrefix = 'green-ship';
 		greenShip.setRotation((3 * Math.PI) / 4);
-		greenShip.setShipCapitan(createMadShipCapitan());
 
 		this.ships.setDepth(10, 1);
 
@@ -148,17 +155,17 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		this.ships.children.iterate(ship => {
 			// isolate error domains
 			this.time.delayedCall(10, () => {
-				const capitan = ship.shipCapitan;
-				const inTurnData = this.collectTurnData(ship);
-				const outTurnData = capitan(inTurnData);
-				ship.onPlayerTurn(outTurnData);
+				const playerTurn = ship.shipPlayer?.(this.collectTurnData(ship));
+				if (playerTurn) {
+					ship.onPlayerTurn(playerTurn);
+				}
 			});
 		});
 	}
 
 	collectTurnData(ship) {
-		const ownShipCenter = ship.body.center;
-		const ownShipHeading = ship.body.velocity.normalize();
+		const ownShipCenter = ship.body.center.clone();
+		const ownShipHeading = ship.body.velocity.clone().normalize();
 		// const ownShipSpeed = Math.round((ship.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 		const targets = this.ships.children
@@ -167,7 +174,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			.map(target => {
 				const los = target.body.center.clone().subtract(ownShipCenter);
 				const range = Math.round((los.length() * 100) / MAX_FIRE_DISTANCE); // in % of max firing distance
-				const heading = target.body.velocity.normalize();
+				const heading = target.body.velocity.clone().normalize();
 				// const speed = Math.round((target.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 				const bearing = Math.atan2(ownShipHeading.cross(los), ownShipHeading.dot(los));
@@ -180,7 +187,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 					name: target.shipName,
 					health: target.shipHealth,
 					range,
-					speed: target.shipSpeed, //?
+					speed: target.shipSpeed,
 					bearingSector,
 					bowSector,
 				};
@@ -189,9 +196,12 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		return {
 			tick: this.time.now,
 			ownShip: {
+				name: ship.shipName,
+				health: ship.shipHealth,
 				speed: ship.shipSpeed,
 				steer: ship.shipSteer,
 				fireSector: ship.shipFireSector,
+				blockedSector: ship.shipBlockedSector,
 				state: ship.shipState,
 			},
 			targets,
@@ -199,8 +209,4 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	}
 
 	update() {}
-}
-
-function getSector(angle) {
-	return (Math.round(angle / FIRE_SECTOR_STEP) + FIRE_SECTORS) % FIRE_SECTORS || FIRE_SECTORS;
 }
