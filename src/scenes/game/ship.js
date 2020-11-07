@@ -14,13 +14,14 @@ export const FIRE_SECTORS = 12;
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 const FIRE_BURST = 3;
 
-const BALL_DAMAGE = 10; // HACK:
-const SHIP_HEALTH = 100;
+const BALL_DAMAGE = 1;
+const SHIP_HEALTH = 50;
 
 export const TEXTURE_ATLAS = 'ship';
 export const TEXTURES_MAP = {
 	whiteShip: {
 		name: 'Adventure Galley',
+		flag: 'sailLarge_7',
 		default: 'ship_1',
 		damage1: 'ship_7',
 		damage2: 'ship_13',
@@ -28,6 +29,7 @@ export const TEXTURES_MAP = {
 	},
 	grayShip: {
 		name: 'Black Pearl',
+		flag: 'sailLarge_8',
 		default: 'ship_2',
 		damage1: 'ship_8',
 		damage2: 'ship_14',
@@ -35,6 +37,7 @@ export const TEXTURES_MAP = {
 	},
 	redShip: {
 		name: 'Royal Fortune',
+		flag: 'sailLarge_9',
 		default: 'ship_3',
 		damage1: 'ship_9',
 		damage2: 'ship_15',
@@ -42,6 +45,7 @@ export const TEXTURES_MAP = {
 	},
 	greenShip: {
 		name: 'Queen Anne’s Revenge',
+		flag: 'sailLarge_10',
 		default: 'ship_4',
 		damage1: 'ship_10',
 		damage2: 'ship_16',
@@ -49,6 +53,7 @@ export const TEXTURES_MAP = {
 	},
 	blueShip: {
 		name: 'Jolly Roger',
+		flag: 'sailLarge_11',
 		default: 'ship_5',
 		damage1: 'ship_11',
 		damage2: 'ship_17',
@@ -56,6 +61,7 @@ export const TEXTURES_MAP = {
 	},
 	yellowShip: {
 		name: 'Whydah',
+		flag: 'sailLarge_12',
 		default: 'ship_6',
 		damage1: 'ship_12',
 		damage2: 'ship_18',
@@ -207,9 +213,9 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		this.shipHealth = Math.max(0, this.shipHealth - BALL_DAMAGE);
 
 		const shipTexture = this.shipTexture ?? TEXTURES_MAP.grayShip;
-		if (this.shipHealth > 66) {
+		if (this.shipHealth > Math.floor((2 / 3) * SHIP_HEALTH)) {
 			this.setTexture(TEXTURE_ATLAS, shipTexture.default);
-		} else if (this.shipHealth > 33) {
+		} else if (this.shipHealth > Math.floor((1 / 3) * SHIP_HEALTH)) {
 			this.setTexture(TEXTURE_ATLAS, shipTexture.damage1);
 		} else if (this.shipHealth > 0) {
 			this.setTexture(TEXTURE_ATLAS, shipTexture.damage2);

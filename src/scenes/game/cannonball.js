@@ -18,7 +18,7 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 		createCallback: cannonball => cannonball.create(),
 		key: TEXTURE_ATLAS,
 		frame: TEXTURES_MAP.default,
-		maxSize: 3,
+		maxSize: 5,
 		collideWorldBounds: true,
 		allowGravity: false,
 		allowDrag: true,
