@@ -15,8 +15,8 @@ import Cannonball, { TEXTURES_MAP as CANNONBALL_TEXTURES_MAP } from './cannonbal
 
 export const MAX_SPEED = 350;
 export const SPEED_STEPS = 5;
-const STEER_STEPS = 5;
-const STEER_FACTOR = 7;
+const RUDDER_STEPS = 3;
+const RUDDER_FACTOR = 4;
 export const FIRE_SECTORS = 12;
 
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
@@ -69,7 +69,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	cannonballs;
 
 	shipSpeed = 0;
-	shipSteer = 0;
+	shipRudder = 0;
 	shipFireSector = 0;
 	shipBlockedSector = 0;
 
@@ -103,11 +103,12 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 		this.setBlockedSector();
 
+		const heading = this.rotation + Math.PI / 2;
 		const bodySpeed = this.shipSpeed * (MAX_SPEED / SPEED_STEPS);
-		const bodyAngularVelocity = (this.shipSteer * bodySpeed) / STEER_FACTOR;
+		const bodyAngularVelocity = (this.shipRudder * bodySpeed) / RUDDER_FACTOR;
 
 		this.body.angularVelocity = bodyAngularVelocity;
-		this.body.velocity.setToPolar(this.rotation + Math.PI / 2, bodySpeed);
+		this.body.velocity.setToPolar(heading, bodySpeed);
 	}
 
 	setBlockedSector() {
@@ -133,7 +134,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 	onPlayerTurn(data) {
 		this.shipSpeed = 0;
-		this.shipSteer = 0;
+		this.shipRudder = 0;
 		this.shipFire = 0;
 
 		if (!data) {
@@ -145,8 +146,12 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		if (data.speed) {
 			this.shipSpeed = Phaser.Math.Clamp(Math.round(data.speed), 0, SPEED_STEPS);
 		}
-		if (data.steer) {
-			this.shipSteer = Phaser.Math.Clamp(Math.round(data.steer), -STEER_STEPS, +STEER_STEPS);
+		if (data.rudder) {
+			this.shipRudder = Phaser.Math.Clamp(
+				Math.round(data.rudder),
+				-RUDDER_STEPS,
+				+RUDDER_STEPS
+			);
 		}
 		if (data.fireSector) {
 			this.shipFireSector = Phaser.Math.Clamp(Math.round(data.fireSector), 0, FIRE_SECTORS);
@@ -170,12 +175,13 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 				);
 				this.cannonballs.setDepth(20, 1);
 				if (ball) {
+					const heading = this.rotation + Math.PI / 2;
 					const variation = Phaser.Math.FloatBetween(
 						-FIRE_SECTOR_STEP / 5,
 						+FIRE_SECTOR_STEP / 5
 					);
 					const fireBearing =
-						(this.shipFireSector * FIRE_SECTOR_STEP + this.rotation + variation) %
+						(this.shipFireSector * FIRE_SECTOR_STEP + heading + variation) %
 						(2 * Math.PI);
 					ball.fire(fireBearing);
 				}

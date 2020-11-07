@@ -38,29 +38,24 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 		this.body.onWorldBounds = true;
 	}
 
-	fire(rotation) {
+	fire(bearing) {
 		this.firedAt = this.getCenter();
 
 		this.setTexture('ship', TEXTURES_MAP.default);
 
-		const offset = new Phaser.Math.Vector2().setToPolar(
-			rotation + Math.PI / 2,
-			FIRE_DIR_OFFSET
-		);
+		const offset = new Phaser.Math.Vector2().setToPolar(bearing, FIRE_DIR_OFFSET);
 		this.enableBody(true, this.x + offset.x, this.y + offset.y, true, true);
 
-		this.body.velocity.setToPolar(rotation + Math.PI / 2, CANNONBALL_SPEED);
+		this.body.velocity.setToPolar(bearing, CANNONBALL_SPEED);
 	}
 
 	stop() {
-		this.body.stop(0);
 		this.disableBody(true, true);
-
 		this.firedAt = null;
 	}
 
 	shipHit(ship) {
-		this.body.stop(0);
+		this.disableBody(true, false);
 		this.setTexture('ship', TEXTURES_MAP.explosion);
 		this.scene.time.delayedCall(100, () => {
 			this.stop();

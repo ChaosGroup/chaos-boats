@@ -11,10 +11,10 @@ const SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 
 function createSpinningShipCapitan() {
 	const speed = Phaser.Math.Between(2, 4); // 0 -> (+5)
-	const steer = Phaser.Math.Between(-5, +5); // (-5) <- 0 -> (+5)
+	const rudder = Phaser.Math.Between(-3, +3); // (-3) <- 0 -> (+3)
 	return () => ({
 		speed,
-		steer,
+		rudder,
 		fireSector: Phaser.Math.Between(10, 14) % 12 || 12, // 0 -> 12
 		state: {},
 	});
@@ -31,24 +31,24 @@ function createCapitanJackSparrow() {
 			speed = 5;
 		}
 
-		// (-5) <- 0 -> (+5)
-		let steer = Phaser.Math.Between(-5, +5);
+		// (-3) <- 0 -> (+3)
+		let rudder = Phaser.Math.Between(-2, +2);
 		if (ownShip.blockedSector) {
 			speed = 5;
 
 			if (ownShip.blockedSector === 12) {
 				// pick left or right
-				steer = 5 * Phaser.Math.Between(1, 10) > 3 ? 1 : -1;
+				rudder = 3 * Phaser.Math.Between(1, 10) > 3 ? 1 : -1;
 			} else if (ownShip.blockedSector >= 9) {
-				steer = 5; // turn right
+				rudder = 3; // turn right
 			} else if (ownShip.blockedSector <= 3) {
-				steer = -5; // turn left
+				rudder = -3; // turn left
 			}
 		}
 
 		return {
 			speed,
-			steer,
+			rudder,
 			fireSector,
 
 			state: {
@@ -61,7 +61,7 @@ function createCapitanJackSparrow() {
 function sittingDuckCapitan({ targets }) {
 	return {
 		speed: 0,
-		steer: 0,
+		rudder: 0,
 		fireSector: targets[0]?.range < 100 ? targets[0].bearingSector : 0,
 		state: {},
 	};
@@ -139,7 +139,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		});
 
 		const playersTurnEvent = this.time.addEvent({
-			delay: 750,
+			delay: 500,
 			startAt: 100,
 			callback: this.onPlayersTurn,
 			callbackScope: this,
@@ -199,7 +199,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 				name: ship.shipName,
 				health: ship.shipHealth,
 				speed: ship.shipSpeed,
-				steer: ship.shipSteer,
+				rudder: ship.shipRudder,
 				fireSector: ship.shipFireSector,
 				blockedSector: ship.shipBlockedSector,
 				state: ship.shipState,
