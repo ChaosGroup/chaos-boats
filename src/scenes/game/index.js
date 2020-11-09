@@ -139,16 +139,15 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		{
 			this.redShip = this.ships
 				.get(200, 200, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.redShip.default)
-				.setRotation((-1 * Math.PI) / 4);
+				.setRotation((7 / 8) * (2 * Math.PI));
 			this.redShip.shipTexture = SHIP_TEXTURES_MAP.redShip;
 			this.redShip.shipPlayer = PLAYERS.JackSparrow;
+
 			this.redShip.shipScoreText = this.add
 				.text(110, 50, this.redShip.shipHealth, SCORE_TEXT_STYLE)
 				.setOrigin(0, 0) // left align
 				.setDepth(30);
-
-			// redShip flag
-			this.add
+			this.redShip.shipScoreFlag = this.add
 				.image(75, 70, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.redShip.flag)
 				.setScale(0.8)
 				.setDepth(30);
@@ -158,16 +157,15 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		{
 			this.blueShip = this.ships
 				.get(760, 760, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.blueShip.default)
-				.setRotation((3 * Math.PI) / 4);
+				.setRotation((3 / 8) * (2 * Math.PI));
 			this.blueShip.shipTexture = SHIP_TEXTURES_MAP.blueShip;
-			this.blueShip.shipPlayer = PLAYERS.DavyJones;
+			this.blueShip.shipPlayer = PLAYERS.FiringDummy;
+
 			this.blueShip.shipScoreText = this.add
 				.text(850, 50, this.blueShip.shipHealth, SCORE_TEXT_STYLE)
 				.setOrigin(1, 0) // right align
 				.setDepth(30);
-
-			// blueShip flag
-			this.add
+			this.blueShip.shipScoreFlag = this.add
 				.image(885, 70, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.blueShip.flag)
 				.setScale(0.8)
 				.setDepth(30);
@@ -219,15 +217,15 @@ export default class ChaosShipsScene extends Phaser.Scene {
 
 	collectTurnData(ownShip) {
 		const ownShipCenter = ownShip.body.center.clone();
-		const ownShipHeading = ownShip.body.velocity.clone().normalize();
+		const ownShipHeading = ownShip.getShipHeading();
 
 		const targets = this.ships.children
 			.getArray()
-			.filter(target => target !== ownShip && target.shipHealth > 0)
+			.filter(ship => ship !== ownShip && ship.shipHealth > 0)
 			.map(target => {
 				const los = target.body.center.clone().subtract(ownShipCenter);
 				const range = Math.round((los.length() * 100) / MAX_FIRE_DISTANCE); // in % of max firing distance
-				const heading = target.body.velocity.clone().normalize();
+				const heading = target.getShipHeading();
 
 				const bearing = Math.atan2(ownShipHeading.cross(los), ownShipHeading.dot(los));
 				const bearingSector = getSector(bearing);

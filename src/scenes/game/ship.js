@@ -115,12 +115,16 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 		this.setBlockedSector();
 
-		const heading = this.rotation + Math.PI / 2;
+		const heading = this.getShipHeading();
 		const bodySpeed = this.shipSpeed * (MAX_SPEED / SPEED_STEPS);
 		const bodyAngularVelocity = this.shipRudder * bodySpeed * RUDDER_FACTOR;
 
 		this.body.angularVelocity = bodyAngularVelocity;
-		this.body.velocity.setToPolar(heading, bodySpeed);
+		this.body.velocity.copy(heading.setLength(bodySpeed));
+	}
+
+	getShipHeading() {
+		return new Phaser.Math.Vector2().setToPolar(this.rotation + Math.PI / 2);
 	}
 
 	setBlockedSector() {
@@ -135,7 +139,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 			return;
 		}
 
-		const heading = new Phaser.Math.Vector2().setToPolar(this.rotation + Math.PI / 2);
+		const heading = this.getShipHeading();
 		const velocity = this.body.velocity.clone().normalize();
 		const blockedSector = getSector(Math.atan2(velocity.cross(heading), velocity.dot(heading)));
 		if (blockedSector !== FIRE_SECTORS) {
@@ -187,13 +191,13 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 				);
 				this.cannonballs.setDepth(20, 1);
 				if (ball) {
-					const heading = this.rotation + Math.PI / 2;
+					const heading = this.getShipHeading();
 					const variation = Phaser.Math.FloatBetween(
 						-FIRE_SECTOR_STEP / 5,
 						+FIRE_SECTOR_STEP / 5
 					);
 					const fireBearing =
-						(this.shipFireSector * FIRE_SECTOR_STEP + heading + variation) %
+						(this.shipFireSector * FIRE_SECTOR_STEP + heading.angle() + variation) %
 						(2 * Math.PI);
 					ball.fire(fireBearing);
 				}
