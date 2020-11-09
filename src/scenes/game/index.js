@@ -7,67 +7,21 @@ import Ship, {
 } from './ship';
 import Cannonball, { MAX_FIRE_DISTANCE } from './cannonball';
 
+import PLAYERS from '../../players';
+
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
 const MAP_SIZE = 30;
 
 const SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 
-function createSpinningShipCapitan() {
-	const speed = Phaser.Math.Between(2, 4); // 0 -> (+5)
-	const rudder = Phaser.Math.Between(-3, +3); // (-3) <- 0 -> (+3)
-	return () => ({
-		speed,
-		rudder,
-		fireSector: Phaser.Math.Between(10, 14) % 12 || 12, // 0 -> 12
-		state: {},
-	});
-}
-
-function createCapitanJackSparrow() {
-	return ({ ownShip, targets }) => {
-		const closest = targets.filter(t => t.range < 100).sort((a, b) => a.range - b.range)[0];
-		const fireSector = closest?.bearingSector ?? 0;
-
-		// 0 -> (+5)
-		let speed = Phaser.Math.Between(2, 5);
-		if (closest?.range < 30) {
-			speed = 5;
-		}
-
-		// (-3) <- 0 -> (+3)
-		let rudder = Phaser.Math.Between(-2, +2);
-		if (ownShip.blockedSector) {
-			speed = 5;
-
-			if (ownShip.blockedSector === 12) {
-				// pick left or right
-				rudder = 3 * Phaser.Math.Between(1, 10) > 3 ? 1 : -1;
-			} else if (ownShip.blockedSector >= 9) {
-				rudder = 3; // turn right
-			} else if (ownShip.blockedSector <= 3) {
-				rudder = -3; // turn left
-			}
-		}
-
-		return {
-			speed,
-			rudder,
-			fireSector,
-
-			state: {
-				engaging: closest?.name ?? null,
-			},
-		};
-	};
-}
-
-function sittingDuckCapitan({ targets }) {
-	return {
-		speed: 0,
-		rudder: 0,
-		fireSector: targets[0]?.range < 100 ? targets[0].bearingSector : 0,
-		state: {},
+function createPlayerWorker(player) {
+	const worker = new Worker(player.worker);
+	return sceneTurnData => {
+		return new Promise(resolve => {
+			worker.onmessage = ({ data: playerTurnData }) => resolve(playerTurnData);
+			worker.postMessage(sceneTurnData);
+		});
 	};
 }
 
@@ -187,8 +141,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 				.get(200, 200, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.redShip.default)
 				.setRotation((-1 * Math.PI) / 4);
 			this.redShip.shipTexture = SHIP_TEXTURES_MAP.redShip;
-			this.redShip.shipPlayer = createCapitanJackSparrow();
-			this.redShip.shipPlayerName = 'Jack Sparrow';
+			this.redShip.shipPlayer = PLAYERS.JackSparrow;
 			this.redShip.shipScoreText = this.add
 				.text(110, 50, this.redShip.shipHealth, SCORE_TEXT_STYLE)
 				.setOrigin(0, 0) // left align
@@ -207,8 +160,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 				.get(760, 760, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.blueShip.default)
 				.setRotation((3 * Math.PI) / 4);
 			this.blueShip.shipTexture = SHIP_TEXTURES_MAP.blueShip;
-			this.blueShip.shipPlayer = createCapitanJackSparrow();
-			this.blueShip.shipPlayerName = 'Davy Jones';
+			this.blueShip.shipPlayer = PLAYERS.DavyJones;
 			this.blueShip.shipScoreText = this.add
 				.text(850, 50, this.blueShip.shipHealth, SCORE_TEXT_STYLE)
 				.setOrigin(1, 0) // right align
@@ -226,7 +178,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			.text(
 				480,
 				40,
-				`${this.redShip.shipPlayerName} vs ${this.blueShip.shipPlayerName}`,
+				`${this.redShip.shipPlayer.name} vs ${this.blueShip.shipPlayer.name}`,
 				SCORE_TEXT_STYLE
 			)
 			.setOrigin(0.5, 0) // center align
@@ -238,15 +190,29 @@ export default class ChaosShipsScene extends Phaser.Scene {
 
 		this.ships.children.iterate(ship => {
 			ship.shipScoreText.updateText();
+			if (ship.shipHealth > 0 && ship.shipPlayer) {
+				if (!ship.shipPlayerWorker) {
+					ship.shipPlayerWorker = createPlayerWorker(ship.shipPlayer);
+				}
+				const sceneTurnData = this.collectTurnData(ship);
+				const playerTurnPromise = ship.shipPlayerWorker(sceneTurnData);
+				const timeoutPromise = new Promise(resolve =>
+					this.time.delayedCall(200, () => resolve('TIMEOUT'))
+				);
+				Promise.race([playerTurnPromise, timeoutPromise])
+					.then(playerTurnData => {
+						if (playerTurnData === 'TIMEOUT') {
+							console.log(`Timeout waiting for ${ship.shipPlayer.name} turn!`);
+							return;
+						}
 
-			if (ship.shipHealth > 0) {
-				// isolate error domains
-				this.time.delayedCall(10, () => {
-					const playerTurn = ship.shipPlayer?.(this.collectTurnData(ship));
-					if (playerTurn) {
-						ship.onPlayerTurn(playerTurn);
-					}
-				});
+						if (playerTurnData) {
+							ship.onPlayerTurn(playerTurnData);
+						}
+					})
+					.catch(error => {
+						console.log(`Error with ${ship.shipPlayer.name} turn!`, error);
+					});
 			}
 		});
 	}
@@ -254,7 +220,6 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	collectTurnData(ownShip) {
 		const ownShipCenter = ownShip.body.center.clone();
 		const ownShipHeading = ownShip.body.velocity.clone().normalize();
-		// const ownShipSpeed = Math.round((ship.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 		const targets = this.ships.children
 			.getArray()
@@ -263,7 +228,6 @@ export default class ChaosShipsScene extends Phaser.Scene {
 				const los = target.body.center.clone().subtract(ownShipCenter);
 				const range = Math.round((los.length() * 100) / MAX_FIRE_DISTANCE); // in % of max firing distance
 				const heading = target.body.velocity.clone().normalize();
-				// const speed = Math.round((target.body.velocity.length() * SPEED_STEPS) / MAX_SPEED);
 
 				const bearing = Math.atan2(ownShipHeading.cross(los), ownShipHeading.dot(los));
 				const bearingSector = getSector(bearing);

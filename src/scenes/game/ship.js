@@ -6,15 +6,15 @@ import Cannonball, {
 } from './cannonball';
 
 export const MAX_SPEED = 350;
-export const SPEED_STEPS = 5;
-const RUDDER_STEPS = 3;
+export const SPEED_STEPS = 6;
+export const RUDDER_STEPS = 3;
 const RUDDER_FACTOR = 0.25;
 export const FIRE_SECTORS = 12;
 
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 const FIRE_BURST = 3;
 
-const BALL_DAMAGE = 1;
+const CANNONBALL_DAMAGE = 1;
 const SHIP_HEALTH = 50;
 
 export const TEXTURE_ATLAS = 'ship';
@@ -210,7 +210,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	takeBallDamage() {
-		this.shipHealth = Math.max(0, this.shipHealth - BALL_DAMAGE);
+		this.shipHealth = Math.max(0, this.shipHealth - CANNONBALL_DAMAGE);
 
 		const shipTexture = this.shipTexture ?? TEXTURES_MAP.grayShip;
 		if (this.shipHealth > Math.floor((2 / 3) * SHIP_HEALTH)) {

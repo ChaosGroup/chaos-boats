@@ -7,7 +7,7 @@
 	"license": "MIT",
 	"private": true,
 	"scripts": {
-		"start": "parcel serve src/index.html -d public --port 3001",
+		"start": "parcel serve src/index.html -d public --port 3001 --open",
 		"build": "parcel build src/index.html -d public --public-url . --experimental-scope-hoisting --no-source-maps",
 		"prettier": "prettier --write \"src/**/*.(js*|html)\""
 	},
