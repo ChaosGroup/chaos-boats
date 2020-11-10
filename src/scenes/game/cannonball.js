@@ -57,7 +57,7 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 		this.firedAt = null;
 	}
 
-	shipHit(ship) {
+	shipHit() {
 		this.disableBody(true, false);
 		this.setTexture(TEXTURE_ATLAS, TEXTURES_MAP.explosion);
 		this.scene.time.delayedCall(100, () => {

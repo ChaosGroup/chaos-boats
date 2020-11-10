@@ -77,6 +77,7 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipPlayer;
 
 	shipHealth = SHIP_HEALTH;
+	shipScore = 0;
 	shipTexture = TEXTURES_MAP.grayShip;
 
 	cannonballs;
@@ -85,6 +86,8 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	shipRudder = 0;
 	shipFireSector = 0;
 	shipBlockedSector = 0;
+
+	matchPoints = 0;
 
 	static GroupConfig = {
 		classType: Ship,
@@ -215,7 +218,23 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 	takeBallDamage() {
 		this.shipHealth = Math.max(0, this.shipHealth - CANNONBALL_DAMAGE);
+		this.updateShipTexture();
+	}
 
+	registerBallScore() {
+		this.shipScore += CANNONBALL_DAMAGE;
+	}
+
+	registerMatchPoints(points) {
+		this.matchPoints += points;
+	}
+
+	updateTexts() {
+		this.shipHealthText.setText(`${this.shipHealth}`);
+		this.shipScoreText.setText(`Score ${this.shipScore}`);
+	}
+
+	updateShipTexture() {
 		const shipTexture = this.shipTexture ?? TEXTURES_MAP.grayShip;
 		if (this.shipHealth > Math.floor((2 / 3) * SHIP_HEALTH)) {
 			this.setTexture(TEXTURE_ATLAS, shipTexture.default);
@@ -229,5 +248,19 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 			this.disableBody(false, false);
 			this.setDepth(9);
 		}
+	}
+
+	roundReset() {
+		this.shipHealth = SHIP_HEALTH;
+		this.updateShipTexture();
+
+		this.shipScore = 0;
+
+		this.cannonballs.children.iterate(cb => cb.stop());
+
+		this.shipSpeed = 0;
+		this.shipRudder = 0;
+		this.shipFireSector = 0;
+		this.shipBlockedSector = 0;
 	}
 }

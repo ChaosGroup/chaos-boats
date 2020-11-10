@@ -14,6 +14,57 @@ const TILE_SIZE = 64;
 const MAP_SIZE = 30;
 
 const SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
+const CANVAS_CENTRE = CANVAS_SIZE / 2;
+
+const GAME_ROUNDS = 3;
+const GAME_TIMER = 3 * 6e4; // 3 min
+
+const HEALTH_TEXT_STYLE = {
+	fontFamily: 'Eczar, serif',
+	fontSize: 32,
+	color: '#ffffff',
+	stroke: '#6c8587',
+	strokeThickness: 4,
+	align: 'center',
+};
+const SCORE_TEXT_STYLE = {
+	...HEALTH_TEXT_STYLE,
+	fontSize: 24,
+};
+const TIMER_TEXT_STYLE = {
+	...HEALTH_TEXT_STYLE,
+	fontSize: 24,
+};
+const ROUND_TEXT_STYLE = {
+	...HEALTH_TEXT_STYLE,
+	fontSize: 80,
+	strokeThickness: 8,
+};
+
+const TEXTS_DEPTH = 30;
+
+const DRAW_MATCH_POINTS = 1;
+const WIN_MATCH_POINTS = 3;
+
+const LEFT_CORNER_POS = { x: 200, y: 200, rotation: (7 / 8) * (2 * Math.PI) };
+const RIGHT_CORNER_POS = { x: 760, y: 760, rotation: (3 / 8) * (2 * Math.PI) };
+
+const PLAYER_SHIPS = [
+	{
+		shipTexture: SHIP_TEXTURES_MAP.redShip,
+		flag: { x: 50, y: 45 },
+		health: { x: 115, y: 42 },
+		score: { x: 50, y: 88 },
+		origin: { x: 0, y: 0 }, // left top
+	},
+	{
+		shipTexture: SHIP_TEXTURES_MAP.blueShip,
+		flag: { x: CANVAS_SIZE - 50, y: 45 },
+		health: { x: CANVAS_SIZE - 115, y: 42 },
+		score: { x: CANVAS_SIZE - 50, y: 88 },
+		origin: { x: 1, y: 0 }, // right top
+	},
+];
 
 function createPlayerWorker(player) {
 	const worker = new Worker(player.worker);
@@ -25,26 +76,23 @@ function createPlayerWorker(player) {
 	};
 }
 
-const SCORE_TEXT_STYLE = {
-	fontFamily: 'Eczar, serif',
-	fontSize: 30,
-	color: '#ffffff',
-	stroke: '#6c8587',
-	strokeThickness: 4,
-};
-
-const TIMER = 3 * 6e4; // 3 min
-
 function formatTimer(remaining) {
 	const totalSeconds = Math.floor(remaining / 1e3);
 	const minutes = Math.floor(totalSeconds / 60);
 	const seconds = Math.floor(totalSeconds % 60);
-	return `${minutes.toFixed(0).padStart(2, '0')} : ${seconds.toFixed(0).padStart(2, '0')}`;
+	return `${minutes.toFixed(0).padStart(2, '0')}:${seconds.toFixed(0).padStart(2, '0')}`;
 }
 
 export default class ChaosShipsScene extends Phaser.Scene {
 	ships;
-	startTime;
+
+	round = 0;
+	roundStartTime = null;
+
+	timerText;
+	roundText;
+
+	playersTurnEvent;
 
 	constructor() {
 		super('chaos-ships');
@@ -75,119 +123,200 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			this.physics.add.collider(layer, this.ships, (ship, tile) => ship.shoreCollide(tile));
 		});
 
-		this.createTwoShipsBattle();
+		this.createPlayerShips(PLAYERS.JackSparrow, PLAYERS.DavyJones);
+
+		this.timerText = this.add
+			.text(CANVAS_CENTRE, 45, '', TIMER_TEXT_STYLE)
+			.setOrigin(0.5, 0) // center top align
+			.setDepth(TEXTS_DEPTH);
+
+		this.roundText = this.add
+			.text(CANVAS_CENTRE, CANVAS_CENTRE, '', ROUND_TEXT_STYLE)
+			.setOrigin(0.5, 0.5) // center center align
+			.setDepth(TEXTS_DEPTH);
 
 		this.ships.setDepth(10, 1);
-		this.ships.children.iterate(ship => {
+		this.ships.children.iterate(ownShip => {
 			this.physics.add.collider(
-				this.ships.children.getArray().filter(s => s !== ship),
-				ship.cannonballs,
-				(ship, ball) => {
-					ball.shipHit(ship);
-					ship.takeBallDamage();
-
-					ship.shipScoreText.setText(`${ship.shipHealth}`);
-				}
+				this.ships.children.entries.filter(s => s !== ownShip),
+				ownShip.cannonballs,
+				(target, ball) => this.onShipHit(ownShip, target, ball)
 			);
 		});
 
 		Cannonball.DieOnWorldBounds(this);
 
-		const playersTurnEvent = this.time.addEvent({
+		this.events.on('destroy', () => {
+			if (this.playersTurnEvent) {
+				this.playersTurnEvent.destroy();
+				this.playersTurnEvent = null;
+			}
+		});
+
+		this.roundStart();
+	}
+
+	onShipHit(ownShip, target, ball) {
+		ball.shipHit();
+
+		ownShip.registerBallScore();
+		target.takeBallDamage();
+
+		ownShip.updateTexts();
+
+		const shipsAlive = this.ships.children.entries.filter(s => s.shipHealth > 0);
+		if (shipsAlive.length <= 1) {
+			this.roundStop();
+		}
+	}
+
+	createPlayerShips(...players) {
+		players.forEach((player, index) => {
+			const shipSettings = PLAYER_SHIPS[index];
+
+			const ship = this.ships.get(
+				CANVAS_CENTRE,
+				CANVAS_CENTRE,
+				SHIP_TEXTURES_ATLAS,
+				shipSettings.shipTexture.default
+			);
+			ship.shipTexture = shipSettings.shipTexture;
+			ship.shipPlayer = player;
+
+			ship.shipFlagImage = this.add
+				.image(
+					shipSettings.flag.x,
+					shipSettings.flag.y,
+					SHIP_TEXTURES_ATLAS,
+					shipSettings.shipTexture.flag
+				)
+				.setOrigin(shipSettings.origin.x, shipSettings.origin.y)
+				.setScale(0.8)
+				.setDepth(TEXTS_DEPTH);
+
+			ship.shipHealthText = this.add
+				.text(shipSettings.health.x, shipSettings.health.y, '', HEALTH_TEXT_STYLE)
+				.setOrigin(shipSettings.origin.x, shipSettings.origin.y)
+				.setDepth(TEXTS_DEPTH);
+
+			ship.shipScoreText = this.add
+				.text(shipSettings.score.x, shipSettings.score.y, '', SCORE_TEXT_STYLE)
+				.setOrigin(shipSettings.origin.x, shipSettings.origin.y)
+				.setDepth(TEXTS_DEPTH);
+		});
+	}
+
+	roundStart() {
+		this.round += 1;
+		this.roundStartTime = null;
+
+		this.timerText.setText(this.getTimerText(GAME_TIMER));
+
+		// alternate ship positions between rounds
+		// two ships only
+		{
+			const aPos = this.round % 2 ? LEFT_CORNER_POS : RIGHT_CORNER_POS;
+			const bPos = this.round % 2 ? RIGHT_CORNER_POS : LEFT_CORNER_POS;
+
+			const [aShip, bShip] = this.ships.children.entries;
+
+			aShip.setPosition(aPos.x, aPos.y).setRotation(aPos.rotation);
+			bShip.setPosition(bPos.x, bPos.y).setRotation(bPos.rotation);
+		}
+
+		this.ships.children.iterate(s => {
+			s.roundReset();
+			s.updateTexts();
+			s.enableBody(true, s.x, s.y, true, true);
+		});
+
+		this.roundText.setText(`${this.round}`).setActive(true).setVisible(true);
+		this.time.delayedCall(2000, () => {
+			this.roundText.setActive(false).setVisible(false);
+		});
+
+		this.playersTurnEvent = this.time.addEvent({
 			delay: 500,
-			startAt: 100,
+			startAt: 10,
 			callback: this.onPlayersTurn,
 			callbackScope: this,
 			loop: true,
 		});
-
-		this.events.on('destroy', () => {
-			playersTurnEvent.destroy();
-		});
-
-		// timer
-		this.timerText = this.add
-			.text(480, 75, formatTimer(TIMER), SCORE_TEXT_STYLE)
-			.setOrigin(0.5, 0) // center align
-			.setDepth(30);
 	}
 
-	// createAllShipsBatlle() {
-	// 	const spawnBounds = Phaser.Geom.Rectangle.Inflate(
-	// 		Phaser.Geom.Rectangle.Clone(this.physics.world.bounds),
-	// 		-100,
-	// 		-100
-	// 	);
-	// 	[
-	// 		SHIP_TEXTURES_MAP.whiteShip,
-	// 		SHIP_TEXTURES_MAP.grayShip,
-	// 		SHIP_TEXTURES_MAP.redShip,
-	// 		SHIP_TEXTURES_MAP.greenShip,
-	// 		SHIP_TEXTURES_MAP.blueShip,
-	// 		SHIP_TEXTURES_MAP.yellowShip,
-	// 	].forEach((shipTexture, i) => {
-	// 		const pos = Phaser.Geom.Rectangle.Random(spawnBounds);
-	// 		const ship = this.ships.get(pos.x, pos.y, SHIP_TEXTURES_ATLAS, shipTexture.default);
-	// 		ship.shipTexture = shipTexture;
-	// 		ship.shipPlayer = createCapitanJackSparrow();
-	// 		ship.setRotation((i * Math.PI) / 4);
-	// 	});
-	// }
-
-	createTwoShipsBattle() {
-		// Red Ship
-		{
-			this.redShip = this.ships
-				.get(200, 200, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.redShip.default)
-				.setRotation((7 / 8) * (2 * Math.PI));
-			this.redShip.shipTexture = SHIP_TEXTURES_MAP.redShip;
-			this.redShip.shipPlayer = PLAYERS.JackSparrow;
-
-			this.redShip.shipScoreText = this.add
-				.text(110, 50, this.redShip.shipHealth, SCORE_TEXT_STYLE)
-				.setOrigin(0, 0) // left align
-				.setDepth(30);
-			this.redShip.shipScoreFlag = this.add
-				.image(75, 70, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.redShip.flag)
-				.setScale(0.8)
-				.setDepth(30);
+	roundStop() {
+		if (this.playersTurnEvent) {
+			this.playersTurnEvent.destroy();
+			this.playersTurnEvent = null;
 		}
 
-		// Blue Ship
-		{
-			this.blueShip = this.ships
-				.get(760, 760, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.blueShip.default)
-				.setRotation((3 / 8) * (2 * Math.PI));
-			this.blueShip.shipTexture = SHIP_TEXTURES_MAP.blueShip;
-			this.blueShip.shipPlayer = PLAYERS.FiringDummy;
+		this.ships.children.iterate(s => {
+			s.updateTexts();
+			s.disableBody(true, false);
+		});
 
-			this.blueShip.shipScoreText = this.add
-				.text(850, 50, this.blueShip.shipHealth, SCORE_TEXT_STYLE)
-				.setOrigin(1, 0) // right align
-				.setDepth(30);
-			this.blueShip.shipScoreFlag = this.add
-				.image(885, 70, SHIP_TEXTURES_ATLAS, SHIP_TEXTURES_MAP.blueShip.flag)
-				.setScale(0.8)
-				.setDepth(30);
+		const shipsAlive = this.ships.children.entries
+			.filter(s => s.shipHealth > 0)
+			.sort((a, b) => b.shipScore - a.shipScore);
+		const winner = shipsAlive[0];
+		let roundText;
+		if (shipsAlive.length > 1) {
+			const equals = shipsAlive.filter(s => s.shipScore === winner.shipScore);
+			if (equals.length > 1) {
+				equals.forEach(s => s.registerMatchPoints(DRAW_MATCH_POINTS));
+				roundText = `Round ${this.round}/${GAME_ROUNDS}\nDraw Round`;
+			} else {
+				winner.registerMatchPoints(WIN_MATCH_POINTS);
+				roundText = `Round ${this.round}/${GAME_ROUNDS}\n${winner.shipPlayer.name}`;
+			}
+		} else if (shipsAlive.length === 1) {
+			winner.registerMatchPoints(WIN_MATCH_POINTS);
+			roundText = `Round ${this.round}/${GAME_ROUNDS}\n${winner.shipPlayer.name}`;
+		} else {
+			roundText = `Round ${this.round}/${GAME_ROUNDS}\No Winner`;
+		}
+		this.roundText.setText(roundText).setActive(true).setVisible(true);
+
+		if (this.roundStartTime !== null) {
+			const remaining = Math.max(0, GAME_TIMER - (this.time.now - this.roundStartTime));
+			this.timerText.setText(this.getTimerText(remaining));
+			this.roundStartTime = null;
 		}
 
-		// opponents banner
-		this.opponentsText = this.add
-			.text(
-				480,
-				40,
-				`${this.redShip.shipPlayer.name} vs ${this.blueShip.shipPlayer.name}`,
-				SCORE_TEXT_STYLE
-			)
-			.setOrigin(0.5, 0) // center align
-			.setDepth(30);
+		this.time.delayedCall(2000, () => {
+			this.roundText.setActive(false).setVisible(false);
+
+			if (this.round < GAME_ROUNDS) {
+				this.roundStart();
+			} else {
+				this.matchEnd();
+			}
+		});
+	}
+
+	matchEnd() {
+		this.ships.children.iterate(s => {
+			s.disableBody(true, true);
+		});
+
+		const ships = this.ships.children.entries.sort((a, b) => b.matchPoints - a.matchPoints);
+		const winner = ships[0];
+		const equals = ships.filter(s => s.matchPoints === winner.matchPoints);
+
+		const winnerText =
+			equals.length > 1 ? `Draw Game` : `Game Winner\n${winner.shipPlayer.name}`;
+		this.roundText.setText(winnerText).setActive(true).setVisible(true);
 	}
 
 	onPlayersTurn() {
-		this.opponentsText.updateText();
+		if (this.roundStartTime === null) {
+			this.roundStartTime = this.time.now;
+		}
 
 		this.ships.children.iterate(ship => {
+			ship.shipHealthText.updateText();
 			ship.shipScoreText.updateText();
+
 			if (ship.shipHealth > 0 && ship.shipPlayer) {
 				if (!ship.shipPlayerWorker) {
 					ship.shipPlayerWorker = createPlayerWorker(ship.shipPlayer);
@@ -219,8 +348,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		const ownShipCenter = ownShip.body.center.clone();
 		const ownShipHeading = ownShip.getShipHeading();
 
-		const targets = this.ships.children
-			.getArray()
+		const targets = this.ships.children.entries
 			.filter(ship => ship !== ownShip && ship.shipHealth > 0)
 			.map(target => {
 				const los = target.body.center.clone().subtract(ownShipCenter);
@@ -258,12 +386,21 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		};
 	}
 
+	getTimerText(timer) {
+		const opponents = this.ships.children.entries.map(s => s.shipPlayer.name).join(' vs. ');
+		const result = this.ships.children.entries.map(s => s.matchPoints).join(' - ');
+		const time = formatTimer(timer);
+		return `${opponents}\n${result} · Round ${this.round}/${GAME_ROUNDS} · Time ${time}`;
+	}
+
 	update(now) {
-		if (!this.startTime) {
-			this.startTime = now;
+		if (this.roundStartTime !== null) {
+			const remaining = Math.max(0, GAME_TIMER - (now - this.roundStartTime));
+			this.timerText.setText(this.getTimerText(remaining));
+
+			if (remaining <= 0) {
+				this.roundStop();
+			}
 		}
-		const remaining = Math.max(0, TIMER - (now - this.startTime));
-		const timer = formatTimer(remaining);
-		this.timerText.setText(timer);
 	}
 }
