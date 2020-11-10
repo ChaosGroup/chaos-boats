@@ -394,6 +394,8 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	}
 
 	update(now) {
+		this.ships.children.iterate(s => s.updateTexts());
+
 		if (this.roundStartTime !== null) {
 			const remaining = Math.max(0, GAME_TIMER - (now - this.roundStartTime));
 			this.timerText.setText(this.getTimerText(remaining));
