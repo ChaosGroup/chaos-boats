@@ -245,8 +245,8 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		} else {
 			this.setTexture(TEXTURE_ATLAS, shipTexture.sunk);
 
-			this.disableBody(false, false);
 			this.setDepth(9);
+			this.disableBody(true, false);
 		}
 	}
 

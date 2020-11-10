@@ -12,9 +12,8 @@ import PLAYERS from '../../players';
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
 const MAP_SIZE = 30;
-
-const SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
-const CANVAS_CENTRE = CANVAS_SIZE / 2;
+const TILE_SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
+const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 
 const GAME_ROUNDS = 3;
 const GAME_TIMER = 3 * 6e4; // 3 min
@@ -33,7 +32,7 @@ const SCORE_TEXT_STYLE = {
 };
 const TIMER_TEXT_STYLE = {
 	...HEALTH_TEXT_STYLE,
-	fontSize: 24,
+	fontSize: 26,
 };
 const ROUND_TEXT_STYLE = {
 	...HEALTH_TEXT_STYLE,
@@ -46,24 +45,18 @@ const TEXTS_DEPTH = 30;
 const DRAW_MATCH_POINTS = 1;
 const WIN_MATCH_POINTS = 3;
 
-const LEFT_CORNER_POS = { x: 200, y: 200, rotation: (7 / 8) * (2 * Math.PI) };
-const RIGHT_CORNER_POS = { x: 760, y: 760, rotation: (3 / 8) * (2 * Math.PI) };
+const START_POSITION_RADIUS = (2 / 3) * HALF_CANVAS_SIZE;
+const START_POSITION_ANGLE = Math.PI / 4;
+
+const SCORE_VERTICAL_STEP = 135;
 
 const PLAYER_SHIPS = [
-	{
-		shipTexture: SHIP_TEXTURES_MAP.redShip,
-		flag: { x: 50, y: 45 },
-		health: { x: 115, y: 42 },
-		score: { x: 50, y: 88 },
-		origin: { x: 0, y: 0 }, // left top
-	},
-	{
-		shipTexture: SHIP_TEXTURES_MAP.blueShip,
-		flag: { x: CANVAS_SIZE - 50, y: 45 },
-		health: { x: CANVAS_SIZE - 115, y: 42 },
-		score: { x: CANVAS_SIZE - 50, y: 88 },
-		origin: { x: 1, y: 0 }, // right top
-	},
+	SHIP_TEXTURES_MAP.redShip,
+	SHIP_TEXTURES_MAP.blueShip,
+	SHIP_TEXTURES_MAP.grayShip,
+	SHIP_TEXTURES_MAP.greenShip,
+	SHIP_TEXTURES_MAP.whiteShip,
+	SHIP_TEXTURES_MAP.yellowShip,
 ];
 
 function createPlayerWorker(player) {
@@ -118,7 +111,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			const layer = tilemap.createStaticLayer(i, 'pirates', 0, 0);
 			layer.setCollisionFromCollisionGroup();
 			layer.setDepth(i);
-			layer.setScale(SCALE);
+			layer.setScale(TILE_SCALE);
 
 			this.physics.add.collider(layer, this.ships, (ship, tile) => ship.shoreCollide(tile));
 		});
@@ -126,12 +119,12 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		this.createPlayerShips(PLAYERS.JackSparrow, PLAYERS.DavyJones);
 
 		this.timerText = this.add
-			.text(CANVAS_CENTRE, 45, '', TIMER_TEXT_STYLE)
+			.text(HALF_CANVAS_SIZE, 45, '', TIMER_TEXT_STYLE)
 			.setOrigin(0.5, 0) // center top align
 			.setDepth(TEXTS_DEPTH);
 
 		this.roundText = this.add
-			.text(CANVAS_CENTRE, CANVAS_CENTRE, '', ROUND_TEXT_STYLE)
+			.text(HALF_CANVAS_SIZE, HALF_CANVAS_SIZE, '', ROUND_TEXT_STYLE)
 			.setOrigin(0.5, 0.5) // center center align
 			.setDepth(TEXTS_DEPTH);
 
@@ -172,36 +165,43 @@ export default class ChaosShipsScene extends Phaser.Scene {
 
 	createPlayerShips(...players) {
 		players.forEach((player, index) => {
-			const shipSettings = PLAYER_SHIPS[index];
+			const shipTexture = PLAYER_SHIPS[index];
+			const origin = index % 2 ? [1, 0] : [0, 0]; // top right/left
+			const top = Math.floor(index / 2) * SCORE_VERTICAL_STEP;
 
 			const ship = this.ships.get(
-				CANVAS_CENTRE,
-				CANVAS_CENTRE,
+				HALF_CANVAS_SIZE,
+				HALF_CANVAS_SIZE,
 				SHIP_TEXTURES_ATLAS,
-				shipSettings.shipTexture.default
+				shipTexture.default
 			);
-			ship.shipTexture = shipSettings.shipTexture;
+			ship.shipTexture = shipTexture;
 			ship.shipPlayer = player;
+
+			ship.shipPlayerText = this.add
+				.text(index % 2 ? CANVAS_SIZE - 50 : 50, top + 42, player.name, SCORE_TEXT_STYLE)
+				.setOrigin(...origin)
+				.setDepth(TEXTS_DEPTH);
 
 			ship.shipFlagImage = this.add
 				.image(
-					shipSettings.flag.x,
-					shipSettings.flag.y,
+					index % 2 ? CANVAS_SIZE - 52 : 52,
+					top + 78,
 					SHIP_TEXTURES_ATLAS,
-					shipSettings.shipTexture.flag
+					shipTexture.flag
 				)
-				.setOrigin(shipSettings.origin.x, shipSettings.origin.y)
+				.setOrigin(...origin)
 				.setScale(0.8)
 				.setDepth(TEXTS_DEPTH);
 
 			ship.shipHealthText = this.add
-				.text(shipSettings.health.x, shipSettings.health.y, '', HEALTH_TEXT_STYLE)
-				.setOrigin(shipSettings.origin.x, shipSettings.origin.y)
+				.text(index % 2 ? CANVAS_SIZE - 115 : 115, top + 75, '', HEALTH_TEXT_STYLE)
+				.setOrigin(...origin)
 				.setDepth(TEXTS_DEPTH);
 
 			ship.shipScoreText = this.add
-				.text(shipSettings.score.x, shipSettings.score.y, '', SCORE_TEXT_STYLE)
-				.setOrigin(shipSettings.origin.x, shipSettings.origin.y)
+				.text(index % 2 ? CANVAS_SIZE - 50 : 50, top + 118, '', SCORE_TEXT_STYLE)
+				.setOrigin(...origin)
 				.setDepth(TEXTS_DEPTH);
 		});
 	}
@@ -212,22 +212,26 @@ export default class ChaosShipsScene extends Phaser.Scene {
 
 		this.timerText.setText(this.getTimerText(GAME_TIMER));
 
-		// alternate ship positions between rounds
-		// two ships only
-		{
-			const aPos = this.round % 2 ? LEFT_CORNER_POS : RIGHT_CORNER_POS;
-			const bPos = this.round % 2 ? RIGHT_CORNER_POS : LEFT_CORNER_POS;
+		const ships = this.ships.children.getArray();
 
-			const [aShip, bShip] = this.ships.children.entries;
-
-			aShip.setPosition(aPos.x, aPos.y).setRotation(aPos.rotation);
-			bShip.setPosition(bPos.x, bPos.y).setRotation(bPos.rotation);
+		// rotate positions
+		let steps = this.round;
+		while (--steps) {
+			ships.unshift(ships.pop());
 		}
 
-		this.ships.children.iterate(s => {
-			s.roundReset();
-			s.updateTexts();
-			s.enableBody(true, s.x, s.y, true, true);
+		// put ships on a circle heading to the center
+		const sector = (2 * Math.PI) / ships.length;
+		ships.forEach((ship, index) => {
+			const angle = index * sector + START_POSITION_ANGLE;
+			const vector = new Phaser.Math.Vector2().setToPolar(angle, START_POSITION_RADIUS);
+			ship.setPosition(vector.x + HALF_CANVAS_SIZE, vector.y + HALF_CANVAS_SIZE).setRotation(
+				vector.angle() + Math.PI / 2
+			);
+
+			ship.roundReset();
+			ship.updateTexts();
+			ship.enableBody(true, ship.x, ship.y, true, true);
 		});
 
 		this.roundText.setText(`${this.round}`).setActive(true).setVisible(true);
@@ -273,7 +277,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			winner.registerMatchPoints(WIN_MATCH_POINTS);
 			roundText = `Round ${this.round}/${GAME_ROUNDS}\n${winner.shipPlayer.name}`;
 		} else {
-			roundText = `Round ${this.round}/${GAME_ROUNDS}\No Winner`;
+			roundText = `Round ${this.round}/${GAME_ROUNDS}\nNo Winner`;
 		}
 		this.roundText.setText(roundText).setActive(true).setVisible(true);
 
@@ -314,6 +318,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		}
 
 		this.ships.children.iterate(ship => {
+			ship.shipPlayerText.updateText();
 			ship.shipHealthText.updateText();
 			ship.shipScoreText.updateText();
 
@@ -387,10 +392,9 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	}
 
 	getTimerText(timer) {
-		const opponents = this.ships.children.entries.map(s => s.shipPlayer.name).join(' vs. ');
 		const result = this.ships.children.entries.map(s => s.matchPoints).join(' - ');
 		const time = formatTimer(timer);
-		return `${opponents}\n${result} · Round ${this.round}/${GAME_ROUNDS} · Time ${time}`;
+		return `Round ${this.round}/${GAME_ROUNDS} · Time ${time}\n${result}`;
 	}
 
 	update(now) {
