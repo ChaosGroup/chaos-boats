@@ -9,12 +9,17 @@
 	"scripts": {
 		"start": "parcel serve src/index.html -d public --port 3001 --open",
 		"build": "parcel build src/index.html -d public --public-url . --experimental-scope-hoisting --no-source-maps",
-		"prettier": "prettier --write \"src/**/*.(js*|html)\""
+		"prettier": "prettier --write \"src/**/*.(js*|html)\"",
+		"eslint": "eslint \"src/**/*.js*\""
 	},
 	"dependencies": {
 		"phaser": "^3.24.1"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.12.3",
+		"@babel/eslint-parser": "^7.12.1",
+		"@babel/plugin-syntax-class-properties": "^7.12.1",
+		"eslint": "^7.13.0",
 		"parcel-bundler": "^1.12.4",
 		"parcel-plugin-nuke-dist": "^1.0.1",
 		"parcel-plugin-static-files-copy": "^2.5.0",

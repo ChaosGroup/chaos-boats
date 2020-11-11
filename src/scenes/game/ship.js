@@ -13,6 +13,7 @@ export const FIRE_SECTORS = 12;
 
 const FIRE_SECTOR_STEP = (2 * Math.PI) / FIRE_SECTORS;
 const FIRE_BURST = 3;
+const FIRE_BURST_RATE = 100;
 
 const CANNONBALL_DAMAGE = 1;
 const SHIP_HEALTH = 50;
@@ -91,7 +92,9 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 	static GroupConfig = {
 		classType: Ship,
-		createCallback: ship => ship.create(),
+		createCallback(ship) {
+			ship.create();
+		},
 		collideWorldBounds: true,
 		allowRotation: true,
 		allowGravity: false,
@@ -184,16 +187,16 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		}
 
 		for (let i = 0; i < FIRE_BURST; i++) {
-			this.scene.time.delayedCall(100 * i, () => {
-				const ball = this.cannonballs.getFirstDead(
-					true,
+			this.scene.time.delayedCall(FIRE_BURST_RATE * i, () => {
+				const ball = this.cannonballs.get(
 					this.x,
 					this.y,
 					CANNONBALL_TEXTURE_ATLAS,
 					CANNONBALL_TEXTURES_MAP.default
 				);
-				this.cannonballs.setDepth(20, 1);
 				if (ball) {
+					this.cannonballs.setDepth(20, 1);
+
 					const heading = this.getShipHeading();
 					const variation = Phaser.Math.FloatBetween(
 						-FIRE_SECTOR_STEP / 5,
@@ -202,17 +205,18 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 					const fireBearing =
 						(this.shipFireSector * FIRE_SECTOR_STEP + heading.angle() + variation) %
 						(2 * Math.PI);
+
 					ball.fire(fireBearing);
 				}
 			});
 		}
 	}
 
-	shipCollide(otherShip) {
+	shipCollide(__otherShip) {
 		// no collision damage, radar data and collision warning system needed first
 	}
 
-	shoreCollide(tile) {
+	shoreCollide(__tile) {
 		// no collision damage, radar data and collision warning system needed first
 	}
 
@@ -230,6 +234,12 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 	}
 
 	updateTexts() {
+		this.shipPlayerText.updateText();
+		this.shipHealthText.updateText();
+		this.shipScoreText.updateText();
+	}
+
+	setTexts() {
 		this.shipHealthText.setText(`${this.shipHealth}`);
 		this.shipScoreText.setText(`Score ${this.shipScore}`);
 	}
@@ -256,11 +266,16 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 
 		this.shipScore = 0;
 
-		this.cannonballs.children.iterate(cb => cb.stop());
+		this.cannonballs.children.entries.forEach(cb => cb.stop());
 
 		this.shipSpeed = 0;
 		this.shipRudder = 0;
 		this.shipFireSector = 0;
 		this.shipBlockedSector = 0;
+	}
+
+	stop(hide = true) {
+		this.disableBody(true, hide);
+		this.cannonballs.children.entries.forEach(cb => cb.stop());
 	}
 }

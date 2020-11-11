@@ -15,7 +15,9 @@ export default class Cannonball extends Phaser.Physics.Arcade.Sprite {
 
 	static GroupConfig = {
 		classType: Cannonball,
-		createCallback: cannonball => cannonball.create(),
+		createCallback(cannonball) {
+			cannonball.create();
+		},
 		key: TEXTURE_ATLAS,
 		frame: TEXTURES_MAP.default,
 		maxSize: 5,

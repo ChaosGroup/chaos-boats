@@ -1,22 +1,11 @@
-export default {
-	Dummy: {
-		name: 'Dummy',
-		worker: 'players/Dummy.js',
-	},
-	FiringDummy: {
-		name: 'Firing Dummy',
-		worker: 'players/FiringDummy.js',
-	},
-	MovingDummy: {
-		name: 'Moving Dummy',
-		worker: 'players/MovingDummy.js',
-	},
-	JackSparrow: {
-		name: 'Captain Jack Sparrow',
-		worker: 'players/JackSparrow.js',
-	},
-	DavyJones: {
-		name: 'Davy Jones',
-		worker: 'players/JackSparrow.js',
-	},
-};
+import _PLAYERS from '/players.json';
+
+// append unique key prop to every player to keep players.json self validating
+const PLAYERS = Object.keys(_PLAYERS).reduce(
+	(acc, key) => ((acc[key] = { ..._PLAYERS[key], key }), acc),
+	{}
+);
+
+export const AUTOSTART = [PLAYERS.JackSparrow, PLAYERS.FiringDummy];
+
+export default PLAYERS;

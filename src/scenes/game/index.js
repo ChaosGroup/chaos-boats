@@ -7,7 +7,7 @@ import Ship, {
 } from './ship';
 import Cannonball, { MAX_FIRE_DISTANCE } from './cannonball';
 
-import PLAYERS from '../../players';
+import TextButton from '/utils/text-button';
 
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
@@ -18,7 +18,7 @@ const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 const GAME_ROUNDS = 3;
 const GAME_TIMER = 3 * 6e4; // 3 min
 
-const HEALTH_TEXT_STYLE = {
+const BASE_TEXT_STYLE = {
 	fontFamily: 'Eczar, serif',
 	fontSize: 32,
 	color: '#ffffff',
@@ -27,15 +27,15 @@ const HEALTH_TEXT_STYLE = {
 	align: 'center',
 };
 const SCORE_TEXT_STYLE = {
-	...HEALTH_TEXT_STYLE,
+	...BASE_TEXT_STYLE,
 	fontSize: 24,
 };
 const TIMER_TEXT_STYLE = {
-	...HEALTH_TEXT_STYLE,
+	...BASE_TEXT_STYLE,
 	fontSize: 26,
 };
 const ROUND_TEXT_STYLE = {
-	...HEALTH_TEXT_STYLE,
+	...BASE_TEXT_STYLE,
 	fontSize: 80,
 	strokeThickness: 8,
 };
@@ -59,14 +59,31 @@ const PLAYER_SHIPS = [
 	SHIP_TEXTURES_MAP.yellowShip,
 ];
 
-function createPlayerWorker(player) {
-	const worker = new Worker(player.worker);
-	return sceneTurnData => {
-		return new Promise(resolve => {
-			worker.onmessage = ({ data: playerTurnData }) => resolve(playerTurnData);
-			worker.postMessage(sceneTurnData);
+// simplified web worker to promise wrapper
+// no message matching and call synchronisation
+class PlayerWorker {
+	constructor(player) {
+		this.worker = new Worker(player.worker);
+	}
+
+	call(sceneTurnData) {
+		if (!this.worker) {
+			return Promise.reject('destroyed');
+		}
+
+		return new Promise((resolve, reject) => {
+			this.worker.onmessage = ({ data: playerTurnData }) => resolve(playerTurnData);
+			this.worker.onerror = ({ message }) => reject(message);
+			this.worker.postMessage(sceneTurnData);
 		});
-	};
+	}
+
+	destroy() {
+		if (this.worker) {
+			this.worker.terminate();
+			this.worker = null;
+		}
+	}
 }
 
 function formatTimer(remaining) {
@@ -76,28 +93,12 @@ function formatTimer(remaining) {
 	return `${minutes.toFixed(0).padStart(2, '0')}:${seconds.toFixed(0).padStart(2, '0')}`;
 }
 
-export default class ChaosShipsScene extends Phaser.Scene {
-	ships;
-
-	round = 0;
-	roundStartTime = null;
-
-	timerText;
-	roundText;
-
-	playersTurnEvent;
-
+export default class GameScene extends Phaser.Scene {
 	constructor() {
-		super('chaos-ships');
+		super('game');
 	}
 
-	preload() {
-		this.load.image('tiles', 'assets/tiles_sheet.png');
-		this.load.tilemapTiledJSON('arena-map', 'assets/arena_30x30.json');
-		this.load.atlas('ship', 'assets/ships_sheet.png', 'assets/ships_sheet.json');
-	}
-
-	create() {
+	create(data) {
 		this.ships = this.physics.add.group(Ship.GroupConfig);
 
 		this.physics.add.collider(this.ships, undefined, (ship1, ship2) => {
@@ -107,16 +108,19 @@ export default class ChaosShipsScene extends Phaser.Scene {
 
 		const tilemap = this.make.tilemap({ key: 'arena-map' });
 		tilemap.addTilesetImage('pirates', 'tiles');
-		tilemap.layers.forEach((_layer, i) => {
-			const layer = tilemap.createStaticLayer(i, 'pirates', 0, 0);
-			layer.setCollisionFromCollisionGroup();
-			layer.setDepth(i);
-			layer.setScale(TILE_SCALE);
+		tilemap.layers.forEach((__, layerIndex) => {
+			const layer = tilemap
+				.createStaticLayer(layerIndex, 'pirates', 0, 0)
+				.setCollisionFromCollisionGroup()
+				.setDepth(layerIndex)
+				.setScale(TILE_SCALE);
 
-			this.physics.add.collider(layer, this.ships, (ship, tile) => ship.shoreCollide(tile));
+			this.physics.add.collider(layer, this.ships, (ship, tile) => {
+				ship.shoreCollide(tile);
+			});
 		});
 
-		this.createPlayerShips(PLAYERS.JackSparrow, PLAYERS.DavyJones);
+		Cannonball.DieOnWorldBounds(this);
 
 		this.timerText = this.add
 			.text(HALF_CANVAS_SIZE, 45, '', TIMER_TEXT_STYLE)
@@ -128,43 +132,43 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			.setOrigin(0.5, 0.5) // center center align
 			.setDepth(TEXTS_DEPTH);
 
-		this.ships.setDepth(10, 1);
-		this.ships.children.iterate(ownShip => {
+		this.stopButton = this.add
+			.existing(
+				new TextButton(this, 50, CANVAS_SIZE - 75, '< Menu >', {
+					...BASE_TEXT_STYLE,
+					fontSize: 24,
+				})
+			)
+			.setOrigin(0, 0) // left top align
+			.setDepth(TEXTS_DEPTH)
+			.on('click', () => this.onStopClick());
+
+		this.createPlayers(data);
+	}
+
+	createPlayers(data) {
+		const players = data?.players ?? [];
+		this.createPlayerShips(...players);
+
+		this.ships.children.entries.map(ownShip =>
 			this.physics.add.collider(
 				this.ships.children.entries.filter(s => s !== ownShip),
 				ownShip.cannonballs,
-				(target, ball) => this.onShipHit(ownShip, target, ball)
-			);
-		});
+				(target, ball) => {
+					this.onShipHit(ownShip, target, ball);
+				}
+			)
+		);
 
-		Cannonball.DieOnWorldBounds(this);
+		this.ships.setDepth(10, 1);
 
-		this.events.on('destroy', () => {
-			if (this.playersTurnEvent) {
-				this.playersTurnEvent.destroy();
-				this.playersTurnEvent = null;
-			}
-		});
-
+		this.round = 0;
+		this.roundStartTime = null;
 		this.roundStart();
 	}
 
-	onShipHit(ownShip, target, ball) {
-		ball.shipHit();
-
-		ownShip.registerBallScore();
-		target.takeBallDamage();
-
-		ownShip.updateTexts();
-
-		const shipsAlive = this.ships.children.entries.filter(s => s.shipHealth > 0);
-		if (shipsAlive.length <= 1) {
-			this.roundStop();
-		}
-	}
-
 	createPlayerShips(...players) {
-		players.forEach((player, index) => {
+		players.slice(0, PLAYER_SHIPS.length).forEach((player, index) => {
 			const shipTexture = PLAYER_SHIPS[index];
 			const origin = index % 2 ? [1, 0] : [0, 0]; // top right/left
 			const top = Math.floor(index / 2) * SCORE_VERTICAL_STEP;
@@ -195,7 +199,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 				.setDepth(TEXTS_DEPTH);
 
 			ship.shipHealthText = this.add
-				.text(index % 2 ? CANVAS_SIZE - 115 : 115, top + 75, '', HEALTH_TEXT_STYLE)
+				.text(index % 2 ? CANVAS_SIZE - 115 : 115, top + 75, '', BASE_TEXT_STYLE)
 				.setOrigin(...origin)
 				.setDepth(TEXTS_DEPTH);
 
@@ -206,13 +210,46 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		});
 	}
 
+	stop() {
+		if (this.playersTurnEvent) {
+			this.playersTurnEvent.destroy();
+			this.playersTurnEvent = null;
+		}
+
+		this.ships.children.entries.forEach(ship => {
+			ship.shipPlayerWorker.destroy();
+			ship.stop();
+		});
+	}
+
+	onStopClick() {
+		this.stop();
+
+		const players = this.scene.settings.data?.players ?? [];
+		this.scene.start('menu', { players });
+	}
+
+	onShipHit(ownShip, target, ball) {
+		ball.shipHit();
+
+		ownShip.registerBallScore();
+		target.takeBallDamage();
+
+		ownShip.setTexts();
+
+		const shipsAlive = this.ships.children.entries.filter(s => s.shipHealth > 0);
+		if (shipsAlive.length <= 1) {
+			this.roundStop();
+		}
+	}
+
 	roundStart() {
 		this.round += 1;
 		this.roundStartTime = null;
 
 		this.timerText.setText(this.getTimerText(GAME_TIMER));
 
-		const ships = this.ships.children.getArray();
+		const ships = [...this.ships.children.entries];
 
 		// rotate positions
 		let steps = this.round;
@@ -230,7 +267,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			);
 
 			ship.roundReset();
-			ship.updateTexts();
+			ship.setTexts();
 			ship.enableBody(true, ship.x, ship.y, true, true);
 		});
 
@@ -254,9 +291,9 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			this.playersTurnEvent = null;
 		}
 
-		this.ships.children.iterate(s => {
-			s.updateTexts();
-			s.disableBody(true, false);
+		this.ships.children.entries.forEach(s => {
+			s.setTexts();
+			s.stop(false);
 		});
 
 		const shipsAlive = this.ships.children.entries
@@ -299,8 +336,9 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	}
 
 	matchEnd() {
-		this.ships.children.iterate(s => {
-			s.disableBody(true, true);
+		this.ships.children.entries.forEach(s => {
+			s.setTexts();
+			s.stop();
 		});
 
 		const ships = this.ships.children.entries.sort((a, b) => b.matchPoints - a.matchPoints);
@@ -317,17 +355,17 @@ export default class ChaosShipsScene extends Phaser.Scene {
 			this.roundStartTime = this.time.now;
 		}
 
-		this.ships.children.iterate(ship => {
-			ship.shipPlayerText.updateText();
-			ship.shipHealthText.updateText();
-			ship.shipScoreText.updateText();
+		this.updateTexts();
+
+		this.ships.children.entries.forEach(ship => {
+			ship.updateTexts();
 
 			if (ship.shipHealth > 0 && ship.shipPlayer) {
 				if (!ship.shipPlayerWorker) {
-					ship.shipPlayerWorker = createPlayerWorker(ship.shipPlayer);
+					ship.shipPlayerWorker = new PlayerWorker(ship.shipPlayer);
 				}
 				const sceneTurnData = this.collectTurnData(ship);
-				const playerTurnPromise = ship.shipPlayerWorker(sceneTurnData);
+				const playerTurnPromise = ship.shipPlayerWorker.call(sceneTurnData);
 				const timeoutPromise = new Promise(resolve =>
 					this.time.delayedCall(200, () => resolve('TIMEOUT'))
 				);
@@ -391,6 +429,10 @@ export default class ChaosShipsScene extends Phaser.Scene {
 		};
 	}
 
+	updateTexts() {
+		this.stopButton.updateText();
+	}
+
 	getTimerText(timer) {
 		const result = this.ships.children.entries.map(s => s.matchPoints).join(' - ');
 		const time = formatTimer(timer);
@@ -398,7 +440,7 @@ export default class ChaosShipsScene extends Phaser.Scene {
 	}
 
 	update(now) {
-		this.ships.children.iterate(s => s.updateTexts());
+		this.ships.children.entries.forEach(s => s.setTexts());
 
 		if (this.roundStartTime !== null) {
 			const remaining = Math.max(0, GAME_TIMER - (now - this.roundStartTime));
