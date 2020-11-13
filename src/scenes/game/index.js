@@ -355,11 +355,7 @@ export default class GameScene extends Phaser.Scene {
 			this.roundStartTime = this.time.now;
 		}
 
-		this.updateTexts();
-
 		this.ships.children.entries.forEach(ship => {
-			ship.updateTexts();
-
 			if (ship.shipHealth > 0 && ship.shipPlayer) {
 				if (!ship.shipPlayerWorker) {
 					ship.shipPlayerWorker = new PlayerWorker(ship.shipPlayer);
@@ -427,10 +423,6 @@ export default class GameScene extends Phaser.Scene {
 			},
 			targets,
 		};
-	}
-
-	updateTexts() {
-		this.stopButton.updateText();
 	}
 
 	getTimerText(timer) {

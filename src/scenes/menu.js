@@ -137,9 +137,6 @@ export default class MenuScene extends Phaser.Scene {
 	}
 
 	updateOponents() {
-		this.player1Select.updateTexts();
-		this.player2Select.updateTexts();
-
 		this.opponentsText.setText(`${this.player1?.name ?? '?'} vs ${this.player2?.name ?? '?'}`);
 		this.startButton.disabled = !this.player1 || !this.player2;
 	}

@@ -99,8 +99,4 @@ export default class SelectList extends Phaser.GameObjects.Container {
 		this.up.disabled = this.start === 0;
 		this.down.disabled = this.start === Math.max(0, this.options.length - VISIBLE_ITEMS);
 	}
-
-	updateTexts() {
-		this.iterate(button => button?.updateText());
-	}
 }

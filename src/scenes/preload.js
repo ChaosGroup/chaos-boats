@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 
-import { AUTOSTART } from '/players';
+import { AUTOSTART, DEFAULT } from '/players';
 
 export default class PreloadScene extends Phaser.Scene {
 	constructor() {
@@ -19,7 +19,7 @@ export default class PreloadScene extends Phaser.Scene {
 		if (AUTOSTART?.length > 0) {
 			this.scene.start('game', { players: AUTOSTART });
 		} else {
-			this.scene.start('menu');
+			this.scene.start('menu', { players: DEFAULT ?? [] });
 		}
 	}
 }

@@ -233,12 +233,6 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 		this.matchPoints += points;
 	}
 
-	updateTexts() {
-		this.shipPlayerText.updateText();
-		this.shipHealthText.updateText();
-		this.shipScoreText.updateText();
-	}
-
 	setTexts() {
 		this.shipHealthText.setText(`${this.shipHealth}`);
 		this.shipScoreText.setText(`Score ${this.shipScore}`);
