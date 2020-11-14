@@ -18,6 +18,9 @@ const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 const GAME_ROUNDS = 3;
 const GAME_TIMER = 3 * 6e4; // 3 min
 
+const PLAYERS_TURN_STEP = 300;
+const PLAYERS_TURN_TIMEOUT = 200;
+
 const BASE_TEXT_STYLE = {
 	fontFamily: 'Eczar, serif',
 	fontSize: 32,
@@ -277,7 +280,7 @@ export default class GameScene extends Phaser.Scene {
 		});
 
 		this.playersTurnEvent = this.time.addEvent({
-			delay: 500,
+			delay: PLAYERS_TURN_STEP,
 			startAt: 10,
 			callback: this.onPlayersTurn,
 			callbackScope: this,
@@ -363,7 +366,7 @@ export default class GameScene extends Phaser.Scene {
 				const sceneTurnData = this.collectTurnData(ship);
 				const playerTurnPromise = ship.shipPlayerWorker.call(sceneTurnData);
 				const timeoutPromise = new Promise(resolve =>
-					this.time.delayedCall(200, () => resolve('TIMEOUT'))
+					this.time.delayedCall(PLAYERS_TURN_TIMEOUT, () => resolve('TIMEOUT'))
 				);
 				Promise.race([playerTurnPromise, timeoutPromise])
 					.then(playerTurnData => {
