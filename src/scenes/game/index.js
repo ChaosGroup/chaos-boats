@@ -15,8 +15,8 @@ const MAP_SIZE = 30;
 const TILE_SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 
-const GAME_ROUNDS = 1;
-const GAME_TIMER = 1 * 6e4; // 3 min
+const GAME_ROUNDS = 3;
+const GAME_TIMER = 3 * 6e4; // 3 min
 
 const PLAYERS_TURN_STEP = 300;
 const PLAYERS_TURN_TIMEOUT = 200;
