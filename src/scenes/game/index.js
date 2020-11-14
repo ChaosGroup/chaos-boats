@@ -15,8 +15,8 @@ const MAP_SIZE = 30;
 const TILE_SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 
-const GAME_ROUNDS = 3;
-const GAME_TIMER = 3 * 6e4; // 3 min
+const GAME_ROUNDS = 1;
+const GAME_TIMER = 1 * 6e4; // 3 min
 
 const PLAYERS_TURN_STEP = 300;
 const PLAYERS_TURN_TIMEOUT = 200;
@@ -39,7 +39,7 @@ const TIMER_TEXT_STYLE = {
 };
 const ROUND_TEXT_STYLE = {
 	...BASE_TEXT_STYLE,
-	fontSize: 80,
+	fontSize: 70,
 	strokeThickness: 8,
 };
 
@@ -344,12 +344,16 @@ export default class GameScene extends Phaser.Scene {
 			s.stop();
 		});
 
-		const ships = this.ships.children.entries.sort((a, b) => b.matchPoints - a.matchPoints);
-		const winner = ships[0];
-		const equals = ships.filter(s => s.matchPoints === winner.matchPoints);
+		const result = this.ships.children.entries.map(s => s.matchPoints).join(' - ');
+		const [winner, ...rest] = [...this.ships.children.entries].sort(
+			(a, b) => b.matchPoints - a.matchPoints
+		);
+		const equals = rest.filter(s => s.matchPoints === winner.matchPoints);
 
 		const winnerText =
-			equals.length > 1 ? `Draw Game` : `Game Winner\n${winner.shipPlayer.name}`;
+			equals.length > 0
+				? `Draw Battle\n${result}`
+				: `Battle Won by\n${winner.shipPlayer.name}\n${result}`;
 		this.roundText.setText(winnerText).setActive(true).setVisible(true);
 	}
 

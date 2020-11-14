@@ -74,7 +74,7 @@ export default class MenuScene extends Phaser.Scene {
 			.setWordWrapWidth(800);
 
 		this.opponentsText = this.add
-			.text(HALF_CANVAS_SIZE, 460, '', BUTTON_TEXT_STYLE)
+			.text(HALF_CANVAS_SIZE, 420, '', BUTTON_TEXT_STYLE)
 			.setOrigin(0.5, 0) // center top
 			.setDepth(5);
 
@@ -137,7 +137,7 @@ export default class MenuScene extends Phaser.Scene {
 	}
 
 	updateOponents() {
-		this.opponentsText.setText(`${this.player1?.name ?? '?'} vs ${this.player2?.name ?? '?'}`);
+		this.opponentsText.setText(`Now let the Battle commence\n> ${this.player1?.name ?? '?'} vs ${this.player2?.name ?? '?'} <`);
 		this.startButton.disabled = !this.player1 || !this.player2;
 	}
 }
