@@ -137,7 +137,12 @@ export default class MenuScene extends Phaser.Scene {
 	}
 
 	updateOponents() {
-		this.opponentsText.setText(`Now let the Battle commence\n> ${this.player1?.name ?? '?'} vs ${this.player2?.name ?? '?'} <`);
+		this.opponentsText.setText(
+			[
+				'Now let the Battle commence',
+				`> ${this.player1?.name ?? '?'} vs ${this.player2?.name ?? '?'} <`,
+			].join('\n')
+		);
 		this.startButton.disabled = !this.player1 || !this.player2;
 	}
 }

@@ -163,8 +163,6 @@ export default class Ship extends Phaser.Physics.Arcade.Sprite {
 			return;
 		}
 
-		this.shipState = data.state;
-
 		if (data.speed) {
 			this.shipSpeed = Phaser.Math.Clamp(Math.round(data.speed), 0, SPEED_STEPS);
 		}

@@ -1,3 +1,8 @@
+const port =
+	typeof importScripts === 'function'
+		? (importScripts('port.js'), self._port)
+		: require('./port');
+
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function getRandomIntInclusive(min, max) {
 	min = Math.ceil(min);
@@ -5,7 +10,7 @@ function getRandomIntInclusive(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-onmessage = function ({ data }) {
+port.onMessage(function ({ data }) {
 	const closestTargets = data.targets.filter(t => t.range < 90).sort((a, b) => a.range - b.range);
 	const fireSector = closestTargets.length > 0 ? closestTargets[0].bearingSector : 0;
 	const haveTargetInProximity = closestTargets.length > 0 && closestTargets[0].range < 30;
@@ -27,9 +32,9 @@ onmessage = function ({ data }) {
 		}
 	}
 
-	postMessage({
+	port.postMessage({
 		speed,
 		rudder,
 		fireSector,
 	});
-};
+});

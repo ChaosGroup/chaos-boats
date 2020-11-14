@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 
-import { Preload, Menu, Game } from './scenes';
+import { Preload, Menu, Game } from '/scenes';
 
 const CONFIG = {
-	title: 'Chaos@JsTalks2020',
+	title: 'Chaos @ js.talks(); 2020',
 	type: Phaser.AUTO,
 	parent: 'phaser-container',
 	width: 960,

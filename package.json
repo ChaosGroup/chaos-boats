@@ -6,11 +6,16 @@
 	"author": "Martin Dimitrov <martin@sachmata.com>",
 	"license": "MIT",
 	"private": true,
+	"engines": {
+		"node": ">=14.0"
+	},
 	"scripts": {
 		"start": "parcel serve src/index.html -d public --port 3001 --open",
 		"build": "parcel build src/index.html -d public --public-url . --experimental-scope-hoisting --no-source-maps",
-		"prettier": "prettier --write \"src/**/*.(js*|html)\"",
-		"eslint": "eslint \"src/**/*.js*\""
+		"prettier": "prettier --write \"src/**/*.(js*|html)\" \"rating/**/*.(js*|html)\"",
+		"eslint": "eslint \"src/**/*.js*\" \"rating/**/*.js*\"",
+		"build-headless": "parcel build src/headless.html -d rating/dist --public-url . --no-minify --no-cache --no-source-maps --global Game --log-level 4",
+		"players-rating": "yarn build-headless && node --inspect rating/index.js"
 	},
 	"dependencies": {
 		"phaser": "^3.24.1"
@@ -19,17 +24,32 @@
 		"@babel/core": "^7.12.3",
 		"@babel/eslint-parser": "^7.12.1",
 		"@babel/plugin-syntax-class-properties": "^7.12.1",
+		"canvas": "^2.6.1",
+		"datauri": "^3.0.0",
 		"eslint": "^7.13.0",
+		"jsdom": "^16.4.0",
 		"parcel-bundler": "^1.12.4",
 		"parcel-plugin-nuke-dist": "^1.0.1",
 		"parcel-plugin-static-files-copy": "^2.5.0",
 		"prettier": "^2.1.2"
 	},
-	"parcel-plugin-local-plugins": [
-		"./parcel-plugin/asset-json"
-	],
 	"staticFiles": {
-		"staticPath": "static",
-		"watcherGlob": "**"
+		"staticPath": [
+			{
+				"outDirPattern": "**/public",
+				"staticPath": "static",
+				"excludeGlob": "**/*.md",
+				"watcherGlob": "**"
+			},
+			{
+				"outDirPattern": "**/rating/dist",
+				"staticPath": "rating/static"
+			},
+			{
+				"outDirPattern": "**/rating/dist",
+				"staticPath": "static",
+				"excludeGlob": "**/*.md"
+			}
+		]
 	}
 }

@@ -157,13 +157,19 @@ export default class GameScene extends Phaser.Scene {
 			this.physics.add.collider(
 				this.ships.children.entries.filter(s => s !== ownShip),
 				ownShip.cannonballs,
-				(target, ball) => {
-					this.onShipHit(ownShip, target, ball);
-				}
+				(target, ball) => this.onShipHit(ownShip, target, ball)
 			)
 		);
 
 		this.ships.setDepth(10, 1);
+
+		// headless hook
+		window.onMatchStart?.({
+			ships: this.ships.children.entries.map(s => ({
+				player: s.shipPlayer.key,
+			})),
+			tick: this.time.now,
+		});
 
 		this.round = 0;
 		this.roundStartTime = null;
@@ -233,6 +239,19 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	onShipHit(ownShip, target, ball) {
+		// headless hook
+		window.onShipHit?.({
+			player: target.shipPlayer.key,
+			health: target.shipHealth,
+			score: target.shipScore,
+			scored: {
+				player: ownShip.shipPlayer.key,
+				health: ownShip.shipHealth,
+				score: ownShip.shipScore,
+			},
+			tick: this.time.now,
+		});
+
 		ball.shipHit();
 
 		ownShip.registerBallScore();
@@ -242,7 +261,7 @@ export default class GameScene extends Phaser.Scene {
 
 		const shipsAlive = this.ships.children.entries.filter(s => s.shipHealth > 0);
 		if (shipsAlive.length <= 1) {
-			this.roundStop();
+			this.roundEnd();
 		}
 	}
 
@@ -279,6 +298,16 @@ export default class GameScene extends Phaser.Scene {
 			this.roundText.setActive(false).setVisible(false);
 		});
 
+		// headless hook
+		window.onRoundStart?.({
+			round: this.round,
+			ships: this.ships.children.entries.map(s => ({
+				player: s.shipPlayer.key,
+				matchPoints: s.matchPoints,
+			})),
+			tick: this.time.now,
+		});
+
 		this.playersTurnEvent = this.time.addEvent({
 			delay: PLAYERS_TURN_STEP,
 			startAt: 10,
@@ -288,7 +317,7 @@ export default class GameScene extends Phaser.Scene {
 		});
 	}
 
-	roundStop() {
+	stopPlay() {
 		if (this.playersTurnEvent) {
 			this.playersTurnEvent.destroy();
 			this.playersTurnEvent = null;
@@ -298,43 +327,65 @@ export default class GameScene extends Phaser.Scene {
 			s.setTexts();
 			s.stop(false);
 		});
+	}
 
-		const shipsAlive = this.ships.children.entries
-			.filter(s => s.shipHealth > 0)
-			.sort((a, b) => b.shipScore - a.shipScore);
-		const winner = shipsAlive[0];
-		let roundText;
-		if (shipsAlive.length > 1) {
-			const equals = shipsAlive.filter(s => s.shipScore === winner.shipScore);
-			if (equals.length > 1) {
-				equals.forEach(s => s.registerMatchPoints(DRAW_MATCH_POINTS));
-				roundText = `Round ${this.round}/${GAME_ROUNDS}\nDraw Round`;
-			} else {
+	roundEnd() {
+		this.stopPlay();
+
+		this.time.delayedCall(500, () => {
+			const shipsAlive = this.ships.children.entries
+				.filter(s => s.shipHealth > 0)
+				.sort((a, b) => b.shipScore - a.shipScore);
+			const winner = shipsAlive[0];
+			let roundText;
+			if (shipsAlive.length > 1) {
+				const equals = shipsAlive.filter(s => s.shipScore === winner.shipScore);
+				if (equals.length > 1) {
+					equals.forEach(s => s.registerMatchPoints(DRAW_MATCH_POINTS));
+					roundText = [`Round ${this.round}/${GAME_ROUNDS}`, 'Draw Round'].join('\n');
+				} else {
+					winner.registerMatchPoints(WIN_MATCH_POINTS);
+					roundText = [`Round ${this.round}/${GAME_ROUNDS}`, winner.shipPlayer.name].join(
+						'\n'
+					);
+				}
+			} else if (shipsAlive.length === 1) {
 				winner.registerMatchPoints(WIN_MATCH_POINTS);
-				roundText = `Round ${this.round}/${GAME_ROUNDS}\n${winner.shipPlayer.name}`;
-			}
-		} else if (shipsAlive.length === 1) {
-			winner.registerMatchPoints(WIN_MATCH_POINTS);
-			roundText = `Round ${this.round}/${GAME_ROUNDS}\n${winner.shipPlayer.name}`;
-		} else {
-			roundText = `Round ${this.round}/${GAME_ROUNDS}\nNo Winner`;
-		}
-		this.roundText.setText(roundText).setActive(true).setVisible(true);
-
-		if (this.roundStartTime !== null) {
-			const remaining = Math.max(0, GAME_TIMER - (this.time.now - this.roundStartTime));
-			this.timerText.setText(this.getTimerText(remaining));
-			this.roundStartTime = null;
-		}
-
-		this.time.delayedCall(2000, () => {
-			this.roundText.setActive(false).setVisible(false);
-
-			if (this.round < GAME_ROUNDS) {
-				this.roundStart();
+				roundText = [`Round ${this.round}/${GAME_ROUNDS}`, winner.shipPlayer.name].join(
+					'\n'
+				);
 			} else {
-				this.matchEnd();
+				roundText = [`Round ${this.round}/${GAME_ROUNDS}`, 'No Winner'].join('\n');
 			}
+			this.roundText.setText(roundText).setActive(true).setVisible(true);
+
+			// headless hook
+			window.onRoundEnd?.({
+				round: this.round,
+				ships: this.ships.children.entries.map(s => ({
+					player: s.shipPlayer.key,
+					health: s.shipHealth,
+					score: s.shipScore,
+					matchPoints: s.matchPoints,
+				})),
+				tick: this.time.now,
+			});
+
+			if (this.roundStartTime !== null) {
+				const remaining = Math.max(0, GAME_TIMER - (this.time.now - this.roundStartTime));
+				this.timerText.setText(this.getTimerText(remaining));
+				this.roundStartTime = null;
+			}
+
+			this.time.delayedCall(2000, () => {
+				this.roundText.setActive(false).setVisible(false);
+
+				if (this.round < GAME_ROUNDS) {
+					this.roundStart();
+				} else {
+					this.matchEnd();
+				}
+			});
 		});
 	}
 
@@ -352,9 +403,18 @@ export default class GameScene extends Phaser.Scene {
 
 		const winnerText =
 			equals.length > 0
-				? `Draw Battle\n${result}`
-				: `Battle Won by\n${winner.shipPlayer.name}\n${result}`;
+				? ['Draw Battle', result].join('\n')
+				: ['Battle Won by', winner.shipPlayer.name, result].join('\n');
 		this.roundText.setText(winnerText).setActive(true).setVisible(true);
+
+		// headless hook
+		window.onMatchEnd?.({
+			ships: this.ships.children.entries.map(s => ({
+				player: s.shipPlayer.key,
+				matchPoints: s.matchPoints,
+			})),
+			tick: this.time.now,
+		});
 	}
 
 	onPlayersTurn() {
@@ -381,6 +441,14 @@ export default class GameScene extends Phaser.Scene {
 
 						if (playerTurnData) {
 							ship.onPlayerTurn(playerTurnData);
+
+							// headless hook
+							window.onPlayerTurn?.({
+								player: ship.shipPlayer.key,
+								sceneTurnData,
+								playerTurnData,
+								tick: this.time.now,
+							});
 						}
 					})
 					.catch(error => {
@@ -408,7 +476,6 @@ export default class GameScene extends Phaser.Scene {
 				const bowSector = getSector(bow);
 
 				return {
-					name: target.shipTexture.name,
 					health: target.shipHealth,
 					range,
 					speed: target.shipSpeed,
@@ -420,13 +487,11 @@ export default class GameScene extends Phaser.Scene {
 		return {
 			tick: this.time.now,
 			ownShip: {
-				name: ownShip.shipTexture.name,
 				health: ownShip.shipHealth,
 				speed: ownShip.shipSpeed,
 				rudder: ownShip.shipRudder,
 				fireSector: ownShip.shipFireSector,
 				blockedSector: ownShip.shipBlockedSector,
-				state: ownShip.shipState,
 			},
 			targets,
 		};
@@ -435,7 +500,7 @@ export default class GameScene extends Phaser.Scene {
 	getTimerText(timer) {
 		const result = this.ships.children.entries.map(s => s.matchPoints).join(' - ');
 		const time = formatTimer(timer);
-		return `Round ${this.round}/${GAME_ROUNDS} · Time ${time}\n${result}`;
+		return [`Round ${this.round}/${GAME_ROUNDS} · Time ${time}`, result].join('\n');
 	}
 
 	update(now) {
@@ -446,7 +511,17 @@ export default class GameScene extends Phaser.Scene {
 			this.timerText.setText(this.getTimerText(remaining));
 
 			if (remaining <= 0) {
-				this.roundStop();
+				// headless hook
+				window.onTimerOut?.({
+					ships: this.ships.children.entries.map(s => ({
+						player: s.shipPlayer.key,
+						health: s.shipHelth,
+						score: s.shipScore,
+					})),
+					tick: this.time.now,
+				});
+
+				this.roundEnd();
 			}
 		}
 	}
