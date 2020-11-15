@@ -415,6 +415,11 @@ export default class GameScene extends Phaser.Scene {
 			})),
 			tick: this.time.now,
 		});
+
+		// headless rate players run
+		if (typeof window.onRatePlayers === 'function') {
+			this.scene.start('preload');
+		}
 	}
 
 	onPlayersTurn() {

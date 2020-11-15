@@ -16,6 +16,15 @@ export default class PreloadScene extends Phaser.Scene {
 	}
 
 	create() {
+		// headless rate players run
+		if (typeof window.onRatePlayers === 'function') {
+			const players = window.onRatePlayers();
+			if (players?.length > 0) {
+				this.scene.start('game', { players });
+			}
+			return;
+		}
+
 		if (AUTOSTART?.length > 0) {
 			this.scene.start('game', { players: AUTOSTART });
 		} else {
