@@ -13,7 +13,10 @@ const CONFIG = {
 	backgroundColor: 0xfae8c2,
 	physics: {
 		default: 'arcade',
-		arcade: { gravity: { x: 0, y: 0 }, debug: false },
+		arcade: {
+			gravity: { x: 0, y: 0 },
+			debug: false,
+		},
 	},
 	audio: { noAudio: true },
 	scene: [Preload, Menu, Game],

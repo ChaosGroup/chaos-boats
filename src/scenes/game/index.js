@@ -15,8 +15,11 @@ const MAP_SIZE = 30;
 const TILE_SCALE = CANVAS_SIZE / (MAP_SIZE * TILE_SIZE);
 const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 
-const GAME_ROUNDS = 3;
-const GAME_TIMER = 3 * 6e4; // 3 min
+// headless rate players run
+const HEADLESS_RATING = typeof window.onRatePlayers === 'function';
+
+const GAME_ROUNDS = HEADLESS_RATING ? 4 : 3;
+const GAME_TIMER = HEADLESS_RATING ? 1 * 6e4 : 3 * 6e4; // min
 
 const PLAYERS_TURN_STEP = 300;
 const PLAYERS_TURN_TIMEOUT = 200;
@@ -164,12 +167,15 @@ export default class GameScene extends Phaser.Scene {
 		this.ships.setDepth(10, 1);
 
 		// headless hook
-		window.onMatchStart?.({
-			ships: this.ships.children.entries.map(s => ({
-				player: s.shipPlayer.key,
-			})),
-			tick: this.time.now,
-		});
+		window.onMatchStart?.(
+			{
+				ships: this.ships.children.entries.map(s => ({
+					player: s.shipPlayer.key,
+				})),
+				tick: this.time.now,
+			},
+			this
+		);
 
 		this.round = 0;
 		this.roundStartTime = null;
@@ -417,7 +423,7 @@ export default class GameScene extends Phaser.Scene {
 		});
 
 		// headless rate players run
-		if (typeof window.onRatePlayers === 'function') {
+		if (HEADLESS_RATING) {
 			this.scene.start('preload');
 		}
 	}

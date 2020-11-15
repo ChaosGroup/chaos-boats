@@ -15,7 +15,7 @@
 		"prettier": "prettier --write \"src/**/*.(js*|html)\" \"rating/**/*.(js*|html)\"",
 		"eslint": "eslint \"src/**/*.js*\" \"rating/**/*.js*\"",
 		"build-headless": "parcel build src/headless.html -d rating/dist --public-url . --no-minify --no-cache --no-source-maps --global Game --log-level 4",
-		"players-rating": "yarn build-headless && node --inspect rating/index.js"
+		"players-rating": "yarn build-headless && node rating/index.js && yarn prettier"
 	},
 	"dependencies": {
 		"phaser": "^3.24.1"
