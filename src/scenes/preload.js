@@ -7,6 +7,11 @@ export default class PreloadScene extends Phaser.Scene {
 		super('preload');
 	}
 
+	init() {
+		// headless hook
+		window.onPreloadGame?.(this.game);
+	}
+
 	preload() {
 		this.load.image('tiles', 'assets/tiles_sheet.png');
 		this.load.tilemapTiledJSON('arena-map', 'assets/arena_30x30.json');
@@ -18,7 +23,7 @@ export default class PreloadScene extends Phaser.Scene {
 	create() {
 		// headless rate players run
 		if (typeof window.onRatePlayers === 'function') {
-			const players = window.onRatePlayers();
+			const players = window.onRatePlayers(this.game);
 			if (players?.length > 0) {
 				this.scene.start('game', { players });
 			}

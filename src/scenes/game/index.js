@@ -18,11 +18,11 @@ const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 // headless rate players run
 const HEADLESS_RATING = typeof window.onRatePlayers === 'function';
 
-const GAME_ROUNDS = HEADLESS_RATING ? 4 : 3;
+const GAME_ROUNDS = HEADLESS_RATING ? 6 : 3;
 const GAME_TIMER = HEADLESS_RATING ? 1 * 6e4 : 3 * 6e4; // min
 
 const PLAYERS_TURN_STEP = 300;
-const PLAYERS_TURN_TIMEOUT = 200;
+const PLAYERS_TURN_TIMEOUT = 100;
 
 const BASE_TEXT_STYLE = {
 	fontFamily: 'Eczar, serif',
@@ -166,16 +166,12 @@ export default class GameScene extends Phaser.Scene {
 
 		this.ships.setDepth(10, 1);
 
-		// headless hook
-		window.onMatchStart?.(
-			{
-				ships: this.ships.children.entries.map(s => ({
-					player: s.shipPlayer.key,
-				})),
-				tick: this.time.now,
-			},
-			this
-		);
+		this.events.emit('matchStart', {
+			ships: this.ships.children.entries.map(s => ({
+				player: s.shipPlayer.key,
+			})),
+			tick: this.time.now,
+		});
 
 		this.round = 0;
 		this.roundStartTime = null;
@@ -245,8 +241,7 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	onShipHit(ownShip, target, ball) {
-		// headless hook
-		window.onShipHit?.({
+		this.events.emit('shipHit', {
 			player: target.shipPlayer.key,
 			health: target.shipHealth,
 			score: target.shipScore,
@@ -304,8 +299,7 @@ export default class GameScene extends Phaser.Scene {
 			this.roundText.setActive(false).setVisible(false);
 		});
 
-		// headless hook
-		window.onRoundStart?.({
+		this.events.emit('roundStart', {
 			round: this.round,
 			ships: this.ships.children.entries.map(s => ({
 				player: s.shipPlayer.key,
@@ -365,8 +359,7 @@ export default class GameScene extends Phaser.Scene {
 			}
 			this.roundText.setText(roundText).setActive(true).setVisible(true);
 
-			// headless hook
-			window.onRoundEnd?.({
+			this.events.emit('roundEnd', {
 				round: this.round,
 				ships: this.ships.children.entries.map(s => ({
 					player: s.shipPlayer.key,
@@ -413,8 +406,7 @@ export default class GameScene extends Phaser.Scene {
 				: ['Battle Won by', winner.shipPlayer.name, result].join('\n');
 		this.roundText.setText(winnerText).setActive(true).setVisible(true);
 
-		// headless hook
-		window.onMatchEnd?.({
+		this.events.emit('matchEnd', {
 			ships: this.ships.children.entries.map(s => ({
 				player: s.shipPlayer.key,
 				matchPoints: s.matchPoints,
@@ -453,8 +445,7 @@ export default class GameScene extends Phaser.Scene {
 						if (playerTurnData) {
 							ship.onPlayerTurn(playerTurnData);
 
-							// headless hook
-							window.onPlayerTurn?.({
+							this.events.emit('playerTurn', {
 								player: ship.shipPlayer.key,
 								sceneTurnData,
 								playerTurnData,
@@ -522,8 +513,7 @@ export default class GameScene extends Phaser.Scene {
 			this.timerText.setText(this.getTimerText(remaining));
 
 			if (remaining <= 0) {
-				// headless hook
-				window.onTimerOut?.({
+				this.events.emit('timerOut', {
 					ships: this.ships.children.entries.map(s => ({
 						player: s.shipPlayer.key,
 						health: s.shipHelth,

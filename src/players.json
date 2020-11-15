@@ -3,13 +3,13 @@
 		"name": "Dummy",
 		"worker": "players/Dummy.js"
 	},
-	"FiringDummy": {
-		"name": "Firing Dummy",
-		"worker": "players/FiringDummy.js"
-	},
 	"MovingDummy": {
 		"name": "Moving Dummy",
 		"worker": "players/MovingDummy.js"
+	},
+	"FiringDummy": {
+		"name": "Firing Dummy",
+		"worker": "players/FiringDummy.js"
 	},
 	"JackSparrow": {
 		"name": "Captain Jack Sparrow",

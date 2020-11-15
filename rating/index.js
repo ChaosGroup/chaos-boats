@@ -24,89 +24,101 @@ const PLAYERS = Object.keys(_PLAYERS).reduce(
 	{}
 );
 
+function createOnRatePlayers(window) {
+	const PLAYER_KEYS = Object.keys(PLAYERS);
+	const PLAYER_PAIRS = PLAYER_KEYS.flatMap((keyA, index) =>
+		PLAYER_KEYS.slice(index + 1).map(keyB => [PLAYERS[keyA], PLAYERS[keyB]])
+	);
+
+	let playerPairsIndex = 0;
+
+	return function onRatePlayers(game) {
+		if (playerPairsIndex < PLAYER_PAIRS.length) {
+			return PLAYER_PAIRS[playerPairsIndex++];
+		}
+
+		// no more pairs
+		writePlayerRatings();
+
+		// bye
+		game.destroy(true);
+		setTimeout(() => {
+			window.close();
+			setTimeout(() => {
+				process.exit();
+			}, 100);
+		}, 100);
+	};
+}
+
+function writePlayerRatings() {
+	const rating = Object.keys(PLAYERS).reduce(
+		(acc, key) => ((acc[key] = PLAYERS[key].matchPoints), acc),
+		{}
+	);
+
+	console.log();
+	console.log('Rating');
+	console.log('##########################');
+	console.log(rating);
+	console.log('##########################');
+
+	fs.writeFileSync(
+		path.join(__dirname, '../src/rating.json'),
+		JSON.stringify(rating, undefined, 4)
+	);
+}
+
 (async function () {
 	console.log('Players rating in Phaser headless mode');
 
-	try {
-		const { window } = await JSDOM.fromFile(path.join(__dirname, './dist/headless.html'), {
-			runScripts: 'dangerously',
-			resources: 'usable',
-			// pretendToBeVisual: true,
+	const { window } = await JSDOM.fromFile(path.join(__dirname, './dist/headless.html'), {
+		runScripts: 'dangerously',
+		resources: 'usable',
+		// pretendToBeVisual: true,
+	});
+
+	polyfillObjectURL(window);
+
+	window.Worker = WorkerProxy;
+
+	window.onRatePlayers = createOnRatePlayers(window);
+
+	const game = await new Promise(
+		resolve =>
+			(window.onPreloadGame = game => {
+				window.onPreloadGame = null;
+				resolve(game);
+			})
+	);
+
+	const scene = game.scene.getScene('game');
+	scene.time.timeScale = SPEED_FACTOR;
+
+	scene.events.on('matchStart', data => {
+		console.log('matchStart', data);
+	});
+	scene.events.on('roundStart', data => {
+		console.log('roundStart', data);
+	});
+	// scene.events.on('playerTurn', data => {
+	// 	console.log('playerTurn', data);
+	// });
+	scene.events.on('shipHit', data => {
+		console.log('shipHit', data);
+	});
+	scene.events.on('timerOut', data => {
+		console.log('timerOut', data);
+	});
+	scene.events.on('roundEnd', data => {
+		console.log('roundEnd', data);
+	});
+	scene.events.on('matchEnd', data => {
+		console.log('matchEnd', data);
+
+		const { ships } = data;
+		ships.forEach(({ player, matchPoints }) => {
+			PLAYERS[player].matchPoints += matchPoints;
 		});
-
-		polyfillObjectURL(window);
-
-		window.Worker = WorkerProxy;
-
-		let playerRatePairsIndex = 0;
-		const playerRatePairs = [];
-		const playersKeys = Object.keys(PLAYERS);
-		for (var i = 0; i < playersKeys.length - 1; i++) {
-			for (var j = i; j < playersKeys.length - 1; j++) {
-				playerRatePairs.push([PLAYERS[playersKeys[i]], PLAYERS[playersKeys[j + 1]]]);
-			}
-		}
-
-		window.onRatePlayers = function () {
-			if (playerRatePairsIndex < playerRatePairs.length) {
-				return playerRatePairs[playerRatePairsIndex++];
-			}
-
-			const rating = Object.keys(PLAYERS).reduce(
-				(acc, key) => ((acc[key] = PLAYERS[key].matchPoints), acc),
-				{}
-			);
-
-			console.log();
-			console.log('Rating');
-			console.log('##########################');
-			console.log(rating);
-			console.log('##########################');
-
-			try {
-				fs.writeFileSync(
-					path.join(__dirname, '../src/rating.json'),
-					JSON.stringify(rating, undefined, 4)
-				);
-			} catch (err) {
-				console.error(err);
-			}
-
-			// bye now
-			window.close();
-			process.exit(); // HACK: ??
-		};
-
-		window.onMatchStart = function (data, scene) {
-			scene.time.timeScale = SPEED_FACTOR; // speed up time events
-
-			console.log('onMatchStart', data);
-		};
-		window.onRoundStart = function (data) {
-			console.log('onRoundStart', data);
-		};
-		// window.onPlayerTurn = function (data) {
-		// 	console.log('onPlayerTurn', data);
-		// };
-		window.onShipHit = function (data) {
-			console.log('onShipHit', data);
-		};
-		window.onTimerOut = function (data) {
-			console.log('onTimerOut', data);
-		};
-		window.onRoundEnd = function (data) {
-			console.log('onRoundEnd', data);
-		};
-		window.onMatchEnd = function (data) {
-			console.log('onMatchEnd', data);
-
-			const { ships } = data;
-			ships.forEach(({ player, matchPoints }) => {
-				PLAYERS[player].matchPoints += matchPoints;
-			});
-		};
-	} catch (error) {
-		console.error(error);
-		console.log('Exiting');
-	}
+	});
 })();
