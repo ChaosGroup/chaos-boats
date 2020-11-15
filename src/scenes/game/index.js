@@ -241,6 +241,13 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	onShipHit(ownShip, target, ball) {
+		ball.shipHit();
+
+		ownShip.registerBallScore();
+		target.takeBallDamage();
+
+		ownShip.setTexts();
+
 		this.events.emit('shipHit', {
 			player: target.shipPlayer.key,
 			health: target.shipHealth,
@@ -252,13 +259,6 @@ export default class GameScene extends Phaser.Scene {
 			},
 			tick: this.time.now,
 		});
-
-		ball.shipHit();
-
-		ownShip.registerBallScore();
-		target.takeBallDamage();
-
-		ownShip.setTexts();
 
 		const shipsAlive = this.ships.children.entries.filter(s => s.shipHealth > 0);
 		if (shipsAlive.length <= 1) {
@@ -327,6 +327,12 @@ export default class GameScene extends Phaser.Scene {
 			s.setTexts();
 			s.stop(false);
 		});
+
+		if (this.roundStartTime !== null) {
+			const remaining = Math.max(0, GAME_TIMER - (this.time.now - this.roundStartTime));
+			this.timerText.setText(this.getTimerText(remaining));
+			this.roundStartTime = null;
+		}
 	}
 
 	roundEnd() {
@@ -336,12 +342,15 @@ export default class GameScene extends Phaser.Scene {
 			const shipsAlive = this.ships.children.entries
 				.filter(s => s.shipHealth > 0)
 				.sort((a, b) => b.shipScore - a.shipScore);
+
 			const winner = shipsAlive[0];
 			let roundText;
 			if (shipsAlive.length > 1) {
 				const equals = shipsAlive.filter(s => s.shipScore === winner.shipScore);
 				if (equals.length > 1) {
-					equals.forEach(s => s.registerMatchPoints(DRAW_MATCH_POINTS));
+					equals
+						.filter(s => s.shipScore) // award only if scored
+						.forEach(s => s.registerMatchPoints(DRAW_MATCH_POINTS));
 					roundText = [`Round ${this.round}/${GAME_ROUNDS}`, 'Draw Round'].join('\n');
 				} else {
 					winner.registerMatchPoints(WIN_MATCH_POINTS);
@@ -350,7 +359,8 @@ export default class GameScene extends Phaser.Scene {
 					);
 				}
 			} else if (shipsAlive.length === 1) {
-				winner.registerMatchPoints(WIN_MATCH_POINTS);
+				// award in full only if scored
+				winner.registerMatchPoints(winner.shipScore ? WIN_MATCH_POINTS : DRAW_MATCH_POINTS);
 				roundText = [`Round ${this.round}/${GAME_ROUNDS}`, winner.shipPlayer.name].join(
 					'\n'
 				);
@@ -358,6 +368,7 @@ export default class GameScene extends Phaser.Scene {
 				roundText = [`Round ${this.round}/${GAME_ROUNDS}`, 'No Winner'].join('\n');
 			}
 			this.roundText.setText(roundText).setActive(true).setVisible(true);
+			this.timerText.setText(this.getTimerText(0));
 
 			this.events.emit('roundEnd', {
 				round: this.round,
@@ -369,12 +380,6 @@ export default class GameScene extends Phaser.Scene {
 				})),
 				tick: this.time.now,
 			});
-
-			if (this.roundStartTime !== null) {
-				const remaining = Math.max(0, GAME_TIMER - (this.time.now - this.roundStartTime));
-				this.timerText.setText(this.getTimerText(remaining));
-				this.roundStartTime = null;
-			}
 
 			this.time.delayedCall(2000, () => {
 				this.roundText.setActive(false).setVisible(false);
@@ -513,16 +518,16 @@ export default class GameScene extends Phaser.Scene {
 			this.timerText.setText(this.getTimerText(remaining));
 
 			if (remaining <= 0) {
+				this.roundEnd();
+
 				this.events.emit('timerOut', {
 					ships: this.ships.children.entries.map(s => ({
 						player: s.shipPlayer.key,
-						health: s.shipHelth,
+						health: s.shipHealth,
 						score: s.shipScore,
 					})),
 					tick: this.time.now,
 				});
-
-				this.roundEnd();
 			}
 		}
 	}

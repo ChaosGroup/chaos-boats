@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 
 const FIRE_DIR_OFFSET = 30;
-const CANNONBALL_SPEED = 500;
+const CANNONBALL_SPEED = 600;
 export const MAX_FIRE_DISTANCE = 500;
 
 export const TEXTURE_ATLAS = 'ship';
