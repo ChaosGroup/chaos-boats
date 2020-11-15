@@ -11,6 +11,9 @@ export const LIST_HEIGHT = VISIBLE_ITEMS * ITEM_HEIGHT + 2 * BUTTON_HEIGHT;
 
 const EMPTY_ITEM_TEXT = '·';
 
+const BASE_STYLE = { color: '#ffffff', stroke: '#6c8587', strokeThickness: 4 };
+const DISABLED_STYLE = { color: '#dbf6f8', stroke: '#a4bec0', strokeThickness: 4 };
+
 export default class SelectList extends Phaser.GameObjects.Container {
 	start = 0;
 
@@ -73,7 +76,7 @@ export default class SelectList extends Phaser.GameObjects.Container {
 	updateItems() {
 		this.items.forEach((text, index) => {
 			const value = this.values[this.start + index];
-			text.setText(value ?? EMPTY_ITEM_TEXT);
+			text.setText(value ?? EMPTY_ITEM_TEXT).setStyle(value ? BASE_STYLE : DISABLED_STYLE);
 		});
 
 		this.up.disabled = this.start === 0;
