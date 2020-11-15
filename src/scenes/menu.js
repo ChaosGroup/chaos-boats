@@ -13,11 +13,16 @@ const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 
 const BASE_TEXT_STYLE = {
 	fontFamily: 'Eczar, serif',
-	fontSize: 30,
+	fontSize: 32,
 	color: '#ffffff',
 	stroke: '#6c8587',
 	strokeThickness: 4,
 	align: 'center',
+};
+
+const MESSAGE_TEXT_STYLE = {
+	...BASE_TEXT_STYLE,
+	fontSize: 30,
 };
 
 const HEADER_TEXT_STYLE = {
@@ -67,7 +72,7 @@ export default class MenuScene extends Phaser.Scene {
 					'Chaos is challenging You to enter in a Great Sea Battle against ferocious opponents.',
 					'Program your own Bo(a)t in this Open-source Coding Game by forking the GitHub repo and starting a Pull request.',
 				].join(' '),
-				BASE_TEXT_STYLE
+				MESSAGE_TEXT_STYLE
 			)
 			.setOrigin(0.5, 0) // center top
 			.setDepth(5)

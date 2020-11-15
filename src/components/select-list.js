@@ -11,7 +11,7 @@ export const LIST_HEIGHT = VISIBLE_ITEMS * ITEM_HEIGHT + 2 * BUTTON_HEIGHT;
 
 const EMPTY_ITEM_TEXT = '·';
 
-export default class SelectList extends Phaser.GameObjects.Container {
+export default class TextList extends Phaser.GameObjects.Container {
 	start = 0;
 
 	constructor(scene, x, y, style, options, value) {

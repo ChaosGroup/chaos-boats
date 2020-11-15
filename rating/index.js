@@ -64,7 +64,7 @@ function writePlayerRatings() {
 	console.log('##########################');
 
 	fs.writeFileSync(
-		path.join(__dirname, '../src/rating.json'),
+		path.join(__dirname, '../src/ratings.json'),
 		JSON.stringify(rating, undefined, 4)
 	);
 }

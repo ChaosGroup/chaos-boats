@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
 
 import PLAYERS from '/players';
+import RATINGS from '/ratings.json';
 
 import TextButton from '/components/text-button';
-import SelectList, { LIST_WIDTH } from '/components/select-list';
+import TextList, { LIST_WIDTH } from '/components/text-list';
 
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
@@ -13,7 +14,7 @@ const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 
 const BASE_TEXT_STYLE = {
 	fontFamily: 'Eczar, serif',
-	fontSize: 30,
+	fontSize: 32,
 	color: '#ffffff',
 	stroke: '#6c8587',
 	strokeThickness: 4,
@@ -67,6 +68,16 @@ export default class BoardScene extends Phaser.Scene {
 			.setOrigin(0, 0) // left top align
 			.setDepth(5)
 			.on('click', () => this.onStopClick());
+
+		const ratings = Object.keys(RATINGS)
+			.sort((a, b) => RATINGS[b] - RATINGS[a])
+			.map((key, index) => `${index + 1}. ${PLAYERS[key].name} - ${RATINGS[key]}`);
+
+		this.textList = this.add
+			.existing(
+				new TextList(this, HALF_CANVAS_SIZE - LIST_WIDTH / 2, 550, BASE_TEXT_STYLE, ratings)
+			)
+			.setDepth(5);
 	}
 
 	onStopClick() {
