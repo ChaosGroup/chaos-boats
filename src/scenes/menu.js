@@ -2,8 +2,8 @@ import Phaser from 'phaser';
 
 import PLAYERS from '/players';
 
-import TextButton from '/utils/text-button';
-import SelectList, { LIST_WIDTH } from '/utils/select-list';
+import TextButton from '/components/text-button';
+import SelectList, { LIST_WIDTH } from '/components/select-list';
 
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
@@ -65,7 +65,7 @@ export default class MenuScene extends Phaser.Scene {
 				170,
 				[
 					'Chaos is challenging You to enter in a Great Sea Battle against ferocious opponents.',
-					'Program your own Bo(a)t in this Open-source Coding Game by forking our GitHub repo and starting a Pull request.',
+					'Program your own Bo(a)t in this Open-source Coding Game by forking the GitHub repo and starting a Pull request.',
 				].join(' '),
 				BASE_TEXT_STYLE
 			)
@@ -73,19 +73,36 @@ export default class MenuScene extends Phaser.Scene {
 			.setDepth(5)
 			.setWordWrapWidth(800);
 
+		this.boardButton = this.add
+			.existing(
+				new TextButton(
+					this,
+					HALF_CANVAS_SIZE,
+					360,
+					'< Check the Leaderboard >',
+					BUTTON_TEXT_STYLE
+				)
+			)
+			.setOrigin(0.5, 0)
+			.setDepth(5)
+			.on('click', () => this.onBoardClick());
+
 		this.opponentsText = this.add
-			.text(HALF_CANVAS_SIZE, 420, '', BUTTON_TEXT_STYLE)
+			.text(HALF_CANVAS_SIZE, 430, '', BUTTON_TEXT_STYLE)
 			.setOrigin(0.5, 0) // center top
 			.setDepth(5);
 
 		this.startButton = this.add
 			.existing(
-				new TextButton(this, HALF_CANVAS_SIZE, CANVAS_SIZE - 80, '< Start >', {
-					...BASE_TEXT_STYLE,
-					fontSize: 42,
-				})
+				new TextButton(
+					this,
+					HALF_CANVAS_SIZE,
+					CANVAS_SIZE - 100,
+					'< Start >',
+					BUTTON_TEXT_STYLE
+				)
 			)
-			.setOrigin(0.5, 0.5)
+			.setOrigin(0.5, 0)
 			.setDepth(5)
 			.on('click', () => this.onStartClick());
 
@@ -98,7 +115,7 @@ export default class MenuScene extends Phaser.Scene {
 				new SelectList(
 					this,
 					CANVAS_SIZE / 2 - (LIST_WIDTH + 30),
-					700,
+					710,
 					BASE_TEXT_STYLE,
 					playerOptions,
 					this.player1?.key ?? null
@@ -115,7 +132,7 @@ export default class MenuScene extends Phaser.Scene {
 				new SelectList(
 					this,
 					CANVAS_SIZE / 2 + 30,
-					700,
+					710,
 					BASE_TEXT_STYLE,
 					playerOptions,
 					this.player2?.key ?? null
@@ -128,6 +145,10 @@ export default class MenuScene extends Phaser.Scene {
 			});
 
 		this.updateOponents();
+	}
+
+	onBoardClick() {
+		this.scene.start('board');
 	}
 
 	onStartClick() {

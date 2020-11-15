@@ -7,7 +7,7 @@ import Ship, {
 } from './ship';
 import Cannonball, { MAX_FIRE_DISTANCE } from './cannonball';
 
-import TextButton from '/utils/text-button';
+import TextButton from '/components/text-button';
 
 const CANVAS_SIZE = 960;
 const TILE_SIZE = 64;
