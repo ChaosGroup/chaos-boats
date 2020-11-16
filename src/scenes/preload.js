@@ -16,8 +16,6 @@ export default class PreloadScene extends Phaser.Scene {
 		this.load.image('tiles', 'assets/tiles_sheet.png');
 		this.load.tilemapTiledJSON('arena-map', 'assets/arena_30x30.json');
 		this.load.atlas('ship', 'assets/ships_sheet.png', 'assets/ships_sheet.json');
-
-		// this.load.image('chaos-logo', 'assets/chaosgroup_logo.png');
 	}
 
 	create() {

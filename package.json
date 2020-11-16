@@ -12,9 +12,9 @@
 	"scripts": {
 		"start": "parcel serve src/index.html -d public --port 3001 --open",
 		"build": "parcel build src/index.html -d public --public-url . --experimental-scope-hoisting --no-source-maps",
-		"prettier": "prettier --write \"src/**/*.(js*|html)\" \"rating/**/*.(js*|html)\"",
-		"eslint": "eslint \"src/**/*.js\" \"rating/**/*.js\"",
-		"build-headless": "parcel build src/headless.html -d rating/dist --public-url . --no-minify --no-cache --no-source-maps",
+		"prettier": "prettier --write \"src/**/*.(js|html)\" \"rating/**/*.js\" \"static/players/*.js\"",
+		"eslint": "eslint \"src/**/*.js\" \"rating/**/*.js\" \"static/players/*.js\"",
+		"build-headless": "parcel build src/headless.html -d rating/dist --public-url . --no-cache --no-source-maps",
 		"players-rating": "yarn build-headless && node rating/index.js && prettier --write src/ratings.json"
 	},
 	"dependencies": {
@@ -38,7 +38,10 @@
 	},
 	"staticFiles": {
 		"staticPath": "static",
-		"excludeGlob": "**/*.md",
+		"excludeGlob": [
+			"**/*.md",
+			"**/.eslintrc.yml"
+		],
 		"watcherGlob": "**"
 	}
 }

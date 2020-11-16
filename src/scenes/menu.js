@@ -54,11 +54,6 @@ export default class MenuScene extends Phaser.Scene {
 			.setDepth(1)
 			.setScale(TILE_SCALE);
 
-		// this.chaosLogo = this.add
-		// 	.image(HALF_CANVAS_SIZE, 100, 'chaos-logo')
-		// 	.setDepth(5)
-		// 	.setScale(0.8);
-
 		this.header = this.add
 			.text(HALF_CANVAS_SIZE, 80, 'Chaos @ js.talks(); 2020', HEADER_TEXT_STYLE)
 			.setOrigin(0.5, 0) // center top

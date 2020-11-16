@@ -1,4 +1,3 @@
-/* eslint-env worker, node */
 const onGameMessage = (typeof importScripts === 'function'
 	? (importScripts('port.js'), self)
 	: require('./port')
