@@ -1,16 +1,17 @@
-const port =
-	typeof importScripts === 'function'
-		? (importScripts('port.js'), self._port)
-		: require('./port');
+/* eslint-env worker, node */
+const onGameMessage = (typeof importScripts === 'function'
+	? (importScripts('port.js'), self)
+	: require('./port')
+).port;
 
-port.onMessage(function ({ data }) {
-	// stay in place and fire against target
-	const targetsInRange = data.targets.filter(t => t.range < 90);
+// stay in place and fire against target
+onGameMessage(({ targets }) => {
+	const targetsInRange = targets.filter(t => t.range < 90);
 	const fireSector = targetsInRange.length > 0 ? targetsInRange[0].bearingSector : 0;
 
-	port.postMessage({
+	return {
 		speed: 0,
 		rudder: 0,
 		fireSector,
-	});
+	};
 });

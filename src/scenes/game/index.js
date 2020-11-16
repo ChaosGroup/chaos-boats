@@ -66,7 +66,7 @@ const PLAYER_SHIPS = [
 ];
 
 // simplified web worker to promise wrapper
-// no message matching and call synchronisation
+// no message matching and call synchronization
 class PlayerWorker {
 	constructor(player) {
 		this.worker = new Worker(player.worker);

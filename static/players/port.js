@@ -1,9 +1,2 @@
 // Browser Web Workers Port
-self._port = {
-	onMessage(handler) {
-		self.onmessage = handler;
-	},
-	postMessage(message) {
-		self.postMessage(message);
-	},
-};
+self.port = cb => (self.onmessage = ({ data }) => self.postMessage(cb(data)));

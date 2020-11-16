@@ -1,7 +1,20 @@
-const port =
-	typeof importScripts === 'function'
-		? (importScripts('port.js'), self._port)
-		: require('./port');
+/* eslint-env worker, node */
+const onGameMessage = (typeof importScripts === 'function'
+	? (importScripts('port.js'), self)
+	: require('./port')
+).port;
+
+// move randomly and run when close to a target
+onGameMessage(({ targets }) => {
+	const haveTargetsInProximity = targets.filter(t => t.range < 30).length > 0;
+	const speed = haveTargetsInProximity ? 6 : getRandomIntInclusive(2, 5); // 0 -> (+6)
+	const rudder = getRandomIntInclusive(-3, +3); // (-3) <- 0 -> (+3)
+
+	return {
+		speed,
+		rudder,
+	};
+});
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function getRandomIntInclusive(min, max) {
@@ -9,15 +22,3 @@ function getRandomIntInclusive(min, max) {
 	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
-
-port.onMessage(function ({ data }) {
-	// move randomly and run when close to a target
-	const haveTargetsInProximity = data.targets.filter(t => t.range < 30).length > 0;
-	const speed = haveTargetsInProximity ? 6 : getRandomIntInclusive(2, 5); // 0 -> (+6)
-	const rudder = getRandomIntInclusive(-3, +3); // (-3) <- 0 -> (+3)
-
-	port.postMessage({
-		speed,
-		rudder,
-	});
-});
