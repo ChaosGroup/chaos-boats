@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const process = require('process');
 
@@ -71,6 +71,13 @@ function writePlayerRatings() {
 
 (async function () {
 	console.log('Players rating in Phaser headless mode');
+
+	console.log('Replace players/port with node worker threads port');
+	await fs.copy(
+		path.join(__dirname, './static/players/port.js'),
+		path.join(__dirname, './dist/players/port.js'),
+		{ overwrite: true }
+	);
 
 	const { window } = await JSDOM.fromFile(path.join(__dirname, './dist/headless.html'), {
 		runScripts: 'dangerously',
