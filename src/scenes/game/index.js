@@ -65,6 +65,12 @@ const PLAYER_SHIPS = [
 	SHIP_TEXTURES_MAP.yellowShip,
 ];
 
+const STOP_TURN_DATA = {
+	speed: 0,
+	rudder: 0,
+	fireSector: 0,
+};
+
 // simplified web worker to promise wrapper
 // no message matching and call synchronization
 class PlayerWorker {
@@ -441,12 +447,25 @@ export default class GameScene extends Phaser.Scene {
 					this.time.delayedCall(PLAYERS_TURN_TIMEOUT, () => resolve('TIMEOUT'))
 				);
 				Promise.race([playerTurnPromise, timeoutPromise])
-					.then(playerTurnData => {
-						if (playerTurnData === 'TIMEOUT') {
-							console.log(`Timeout waiting for ${ship.shipPlayer.name} turn!`);
-							return;
-						}
+					.then(
+						playerTurnData => {
+							if (playerTurnData === 'TIMEOUT') {
+								console.log(`Timeout waiting for ${ship.shipPlayer.name} turn!`);
+								return null;
+							}
 
+							return { ...STOP_TURN_DATA, ...playerTurnData };
+						},
+						error => {
+							console.log(
+								`Error with ${ship.shipPlayer.name} turn, sending Stop command!`,
+								error
+							);
+
+							return STOP_TURN_DATA;
+						}
+					)
+					.then(playerTurnData => {
 						if (playerTurnData) {
 							ship.onPlayerTurn(playerTurnData);
 
@@ -459,7 +478,7 @@ export default class GameScene extends Phaser.Scene {
 						}
 					})
 					.catch(error => {
-						console.log(`Error with ${ship.shipPlayer.name} turn!`, error);
+						console.log(`Error executing ${ship.shipPlayer.name} turn!`, error);
 					});
 			}
 		});
