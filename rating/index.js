@@ -25,7 +25,12 @@ const PLAYERS = Object.keys(_PLAYERS).reduce(
 );
 
 function createOnRatePlayers(window) {
-	const PLAYER_KEYS = Object.keys(PLAYERS);
+	const players = new Set(Object.keys(PLAYERS));
+	// remove passive demo players from rating
+	players.delete('Dummy');
+	players.delete('MovingDummy');
+
+	const PLAYER_KEYS = [...players];
 	const PLAYER_PAIRS = PLAYER_KEYS.flatMap((keyA, index) =>
 		PLAYER_KEYS.slice(index + 1).map(keyB => [PLAYERS[keyA], PLAYERS[keyB]])
 	);
