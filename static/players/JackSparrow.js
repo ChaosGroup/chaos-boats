@@ -8,10 +8,10 @@ onGameMessage(({ ownShip, targets }) => {
 	const fireSector = closestTargets.length > 0 ? closestTargets[0].bearingSector : 0;
 	const haveTargetInProximity = closestTargets.length > 0 && closestTargets[0].range < 30;
 
-	// 0 -> (+6)
+	// 0 -> 6
 	let speed = haveTargetInProximity ? 6 : getRandomIntInclusive(2, 5);
 
-	// (-3) <- 0 -> (+3)
+	// -3 <- 0 -> +3
 	let rudder = getRandomIntInclusive(-2, +2);
 	// against ship or land
 	if (ownShip.blockedSector) {

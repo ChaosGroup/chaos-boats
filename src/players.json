@@ -12,11 +12,7 @@
 		"worker": "players/FiringDummy.js"
 	},
 	"JackSparrow": {
-		"name": "Captain Jack Sparrow",
-		"worker": "players/JackSparrow.js"
-	},
-	"DavyJones": {
-		"name": "Davy Jones",
+		"name": "Jack Sparrow",
 		"worker": "players/JackSparrow.js"
 	}
 }

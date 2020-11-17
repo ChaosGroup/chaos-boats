@@ -9,8 +9,8 @@ onGameMessage(({ targets }) => {
 	const fireSector = targetsInRange.length > 0 ? targetsInRange[0].bearingSector : 0;
 
 	return {
-		speed: 0,
-		rudder: 0,
+		speed: 0, // 0 -> 6
+		rudder: 0, // -3 <- 0 -> +3
 		fireSector,
 	};
 });

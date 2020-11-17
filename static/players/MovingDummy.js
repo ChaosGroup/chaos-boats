@@ -6,12 +6,13 @@ const onGameMessage = (typeof importScripts === 'function'
 // move randomly and run when close to a target
 onGameMessage(({ targets }) => {
 	const haveTargetsInProximity = targets.filter(t => t.range < 30).length > 0;
-	const speed = haveTargetsInProximity ? 6 : getRandomIntInclusive(2, 5); // 0 -> (+6)
-	const rudder = getRandomIntInclusive(-3, +3); // (-3) <- 0 -> (+3)
+	const speed = haveTargetsInProximity ? 6 : getRandomIntInclusive(2, 5); // 0 -> 6
+	const rudder = getRandomIntInclusive(-3, +3); // -3 <- 0 -> +3
 
 	return {
 		speed,
 		rudder,
+		fireSector: 0, // 0, 1 -> 12
 	};
 });
 

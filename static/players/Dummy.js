@@ -5,6 +5,7 @@ const onGameMessage = (typeof importScripts === 'function'
 
 // stay in place
 onGameMessage(() => ({
-	speed: 0,
-	rudder: 0,
+	speed: 0, // 0 -> 6
+	rudder: 0, // -3 <- 0 -> +3
+	fireSector: 0, // 0, 1 -> 12
 }));

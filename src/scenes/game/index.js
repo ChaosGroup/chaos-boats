@@ -185,46 +185,54 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	createPlayerShips(...players) {
-		players.slice(0, PLAYER_SHIPS.length).forEach((player, index) => {
-			const shipTexture = PLAYER_SHIPS[index];
-			const origin = index % 2 ? [1, 0] : [0, 0]; // top right/left
-			const top = Math.floor(index / 2) * SCORE_VERTICAL_STEP;
+		players
+			.slice(0, PLAYER_SHIPS.length)
+			.filter(Boolean)
+			.forEach((player, index) => {
+				const shipTexture = PLAYER_SHIPS[index];
+				const origin = index % 2 ? [1, 0] : [0, 0]; // top right/left
+				const top = Math.floor(index / 2) * SCORE_VERTICAL_STEP;
 
-			const ship = this.ships.get(
-				HALF_CANVAS_SIZE,
-				HALF_CANVAS_SIZE,
-				SHIP_TEXTURES_ATLAS,
-				shipTexture.default
-			);
-			ship.shipTexture = shipTexture;
-			ship.shipPlayer = player;
-
-			ship.shipPlayerText = this.add
-				.text(index % 2 ? CANVAS_SIZE - 50 : 50, top + 42, player.name, SCORE_TEXT_STYLE)
-				.setOrigin(...origin)
-				.setDepth(TEXTS_DEPTH);
-
-			ship.shipFlagImage = this.add
-				.image(
-					index % 2 ? CANVAS_SIZE - 52 : 52,
-					top + 78,
+				const ship = this.ships.get(
+					HALF_CANVAS_SIZE,
+					HALF_CANVAS_SIZE,
 					SHIP_TEXTURES_ATLAS,
-					shipTexture.flag
-				)
-				.setOrigin(...origin)
-				.setScale(0.8)
-				.setDepth(TEXTS_DEPTH);
+					shipTexture.default
+				);
+				ship.shipTexture = shipTexture;
+				ship.shipPlayer = player;
 
-			ship.shipHealthText = this.add
-				.text(index % 2 ? CANVAS_SIZE - 115 : 115, top + 75, '', BASE_TEXT_STYLE)
-				.setOrigin(...origin)
-				.setDepth(TEXTS_DEPTH);
+				ship.shipPlayerText = this.add
+					.text(
+						index % 2 ? CANVAS_SIZE - 50 : 50,
+						top + 42,
+						player.name,
+						SCORE_TEXT_STYLE
+					)
+					.setOrigin(...origin)
+					.setDepth(TEXTS_DEPTH);
 
-			ship.shipScoreText = this.add
-				.text(index % 2 ? CANVAS_SIZE - 50 : 50, top + 118, '', SCORE_TEXT_STYLE)
-				.setOrigin(...origin)
-				.setDepth(TEXTS_DEPTH);
-		});
+				ship.shipFlagImage = this.add
+					.image(
+						index % 2 ? CANVAS_SIZE - 52 : 52,
+						top + 78,
+						SHIP_TEXTURES_ATLAS,
+						shipTexture.flag
+					)
+					.setOrigin(...origin)
+					.setScale(0.8)
+					.setDepth(TEXTS_DEPTH);
+
+				ship.shipHealthText = this.add
+					.text(index % 2 ? CANVAS_SIZE - 115 : 115, top + 75, '', BASE_TEXT_STYLE)
+					.setOrigin(...origin)
+					.setDepth(TEXTS_DEPTH);
+
+				ship.shipScoreText = this.add
+					.text(index % 2 ? CANVAS_SIZE - 50 : 50, top + 118, '', SCORE_TEXT_STYLE)
+					.setOrigin(...origin)
+					.setDepth(TEXTS_DEPTH);
+			});
 	}
 
 	stop() {
@@ -503,8 +511,9 @@ export default class GameScene extends Phaser.Scene {
 
 				return {
 					health: target.shipHealth,
-					range,
+					score: target.shipScore,
 					speed: target.shipSpeed,
+					range,
 					bearingSector,
 					bowSector,
 				};
@@ -514,6 +523,7 @@ export default class GameScene extends Phaser.Scene {
 			tick: this.time.now,
 			ownShip: {
 				health: ownShip.shipHealth,
+				score: ownShip.shipScore,
 				speed: ownShip.shipSpeed,
 				rudder: ownShip.shipRudder,
 				fireSector: ownShip.shipFireSector,
