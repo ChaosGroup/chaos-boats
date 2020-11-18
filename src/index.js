@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import { Preload, Menu, Board, Game } from '/scenes';
 
 const CONFIG = {
-	title: 'Chaos @ js.talks(); 2020',
+	title: 'Chaos Bo(a)ts @ js.talks(); 2020',
 	type: Phaser.AUTO,
 	parent: 'phaser-container',
 	width: 960,

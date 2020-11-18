@@ -10,7 +10,7 @@
 
 Welcome on board to Chaos Bo(a)ts Game Challenge!
 
-Unleash your secret js superpowers and join in a Great Sea Battle against ferocious opponents. Make your own Bo(a)t the best performer in this open source game and win some special prizes from Chaos Group. Program your own Bo(a)t by forking the GitHub repo and starting a Pull request.
+Unleash your secret JS superpowers and join in a Great Sea Battle against ferocious opponents. Make your own Bo(a)t the best performer in this open source game and win some special prizes from Chaos Group. Program your own Bo(a)t by forking the GitHub repo and starting a Pull request.
 
 <div align="center">
 

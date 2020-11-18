@@ -55,7 +55,7 @@ export default class MenuScene extends Phaser.Scene {
 			.setScale(TILE_SCALE);
 
 		this.header = this.add
-			.text(HALF_CANVAS_SIZE, 80, 'Chaos @ js.talks(); 2020', HEADER_TEXT_STYLE)
+			.text(HALF_CANVAS_SIZE, 80, 'Chaos Bo(a)ts @ js.talks(); 2020', HEADER_TEXT_STYLE)
 			.setOrigin(0.5, 0) // center top
 			.setDepth(5);
 
@@ -64,8 +64,9 @@ export default class MenuScene extends Phaser.Scene {
 				HALF_CANVAS_SIZE,
 				170,
 				[
-					'Chaos is challenging You to enter in a Great Sea Battle against ferocious opponents.',
-					'Program your own Bo(a)t in this Open-source Coding Game by forking the GitHub repo and starting a Pull request.',
+					'Welcome on board to Chaos Bo(a)ts Game Challenge!',
+					'Unleash your secret JS superpowers and join in a Great Sea Battle against ferocious opponents.',
+					'Program your own Bo(a)t by forking the GitHub repo and starting a Pull request.',
 				].join(' '),
 				MESSAGE_TEXT_STYLE
 			)
