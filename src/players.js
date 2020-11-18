@@ -6,7 +6,7 @@ const PLAYERS = Object.keys(_PLAYERS).reduce(
 	{}
 );
 
-export const DEFAULT = [PLAYERS.FiringDummy, PLAYERS.JackSparrow];
+export const DEFAULT = [PLAYERS.JackSparrow, PLAYERS.DavyJones];
 
 // set players to enter in game automatically
 export const AUTOSTART = [];

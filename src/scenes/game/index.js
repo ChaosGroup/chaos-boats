@@ -235,18 +235,6 @@ export default class GameScene extends Phaser.Scene {
 			});
 	}
 
-	stop() {
-		if (this.playersTurnEvent) {
-			this.playersTurnEvent.destroy();
-			this.playersTurnEvent = null;
-		}
-
-		this.ships.children.entries.forEach(ship => {
-			ship.shipPlayerWorker.destroy();
-			ship.stop();
-		});
-	}
-
 	onStopClick() {
 		this.stop();
 
@@ -331,15 +319,20 @@ export default class GameScene extends Phaser.Scene {
 		});
 	}
 
-	stopPlay() {
+	stop() {
 		if (this.playersTurnEvent) {
 			this.playersTurnEvent.destroy();
 			this.playersTurnEvent = null;
 		}
 
-		this.ships.children.entries.forEach(s => {
-			s.setTexts();
-			s.stop(false);
+		this.ships.children.entries.forEach(ship => {
+			ship.setTexts();
+			ship.stop(false);
+
+			if (ship.shipPlayerWorker) {
+				ship.shipPlayerWorker.destroy();
+				ship.shipPlayerWorker = null;
+			}
 		});
 
 		if (this.roundStartTime !== null) {
@@ -350,7 +343,7 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	roundEnd() {
-		this.stopPlay();
+		this.stop();
 
 		this.time.delayedCall(500, () => {
 			const shipsAlive = this.ships.children.entries
@@ -408,9 +401,9 @@ export default class GameScene extends Phaser.Scene {
 	}
 
 	matchEnd() {
-		this.ships.children.entries.forEach(s => {
-			s.setTexts();
-			s.stop();
+		this.ships.children.entries.forEach(ship => {
+			ship.setTexts();
+			ship.stop();
 		});
 
 		const result = this.ships.children.entries.map(s => s.matchPoints).join(' - ');

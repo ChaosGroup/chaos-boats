@@ -45,7 +45,7 @@ onGameMessage(() => ({
 }));
 ```
 
-We can ignore the top import for now, it ensures the communication between the game and the bot and is important for automated rating battles. Our entry is `onGameMessage` function, it accepts a single callback function and in this case totally ignores the battle environment and returns fixed instructions to just stay in place. The `speed` parameter accepts values between `0` for Stop and `6` for Full Ahead. The `rudder` is `0` for heading straight, down to `-3` for steering left and up to `3` for steering right. The last parameter `fireSector` controls the cannon, `0` is for staying silent and every other number from `1` to `12` gives the direction of fire using analog clock hour sections. Our Bow(boat nose) is always on a 12-hour clock and for example the value of `3` is firing at our right side, `9` at left, `6` at back and so goes for every hour sector in between. Keep in mind this clock orientation because we are going to use it again for other angular relations in our game. With this we complete return instructions for the boat and will take a look at battle environment data next.
+We can ignore the top import for now, it ensures the communication between the game and the bot and is important for automated rating battles. Our entry is `onGameMessage` function, it accepts a single callback function and in this case totally ignores the battle environment and returns fixed instructions to just stay in place. The `speed` parameter accepts values between `0` for Stop and `6` for Full Ahead. The `rudder` is `0` for heading straight, down to `-3` for steering left and up to `3` for steering right. The last parameter `fireSector` controls the cannon, `0` is for staying silent and every other number from `1` to `12` gives the direction of fire using 12-hour Clock position. Our Bow(boat nose) is always on a 12-hour clock and for example the value of `3` is firing at our right side, `9` at left, `6` at back and so goes for every hour sector in between. Keep in mind this clock orientation because we are going to use it again for other angular relations in our game. With this we complete return instructions for the boat and will take a look at battle environment data next.
 
 ```js
 onGameMessage(({ ownShip, targets }) => {
@@ -88,7 +88,7 @@ The array `targets` has data about enemies relative to our boat. The `range` is 
 
 ![screenshot](static/docs/ship_orientation.png)
 
-Own ship and target relation
+Own ship and Target ship relation
 
 </div>
 
@@ -102,5 +102,7 @@ You can start your own Bo(a)t by creating a new file in `static/players`, as a s
 // set players to enter in game automatically
 export const AUTOSTART = [PLAYERS.FiringDummy, PLAYERS.JackSparrow_Two];
 ```
+
+In current setup the simulation tries to keep 60 fps but `onGameMessage` function is called approximately 3 times per second this gives plenty of time for a Bo(a)t to return instructions. The game waits for bot response up to 200ms and cancels the turn afterwards. Every bot is executed in his own isolated worker process and can use local scoped variables to keep state during the battle rounds.
 
 The Bo(a)t rating for Leaderboard is done in a round-robin (or all-play-all) tournament in a speed-up headless simulated environment, the pair battle is in six rounds up to one minute each. We will run the tournament and update the Leaderboard once per 24 hours.
