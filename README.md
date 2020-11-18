@@ -1,6 +1,6 @@
 <div align="center">
 
-![screenshot](static/docs/chaos_logo.png)
+![screenshot](docs/chaos_logo.png)
 
 </div>
 
@@ -14,7 +14,7 @@ Unleash your secret js superpowers and join in a Great Sea Battle against feroci
 
 <div align="center">
 
-![screenshot](static/docs/screenshot.png)
+![screenshot](docs/screenshot.png)
 
 Latest Game build with Bo(a)ts Leaderboard is at http://chaosgroup.github.io/chaos-boats-jstalks-2020.
 
@@ -121,7 +121,7 @@ The array `targets` has data about enemies relative to our boat. The `range` is 
 
 <div align="center">
 
-![screenshot](static/docs/ship_orientation.png)
+![screenshot](docs/ship_orientation.png)
 
 Own ship and Target ship relation
 
