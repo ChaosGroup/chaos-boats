@@ -17,6 +17,6 @@
 	},
 	"DavyJones": {
 		"name": "Davy Jones",
-		"worker": "players/JackSparrow.js"
+		"worker": "players/DavyJones.js"
 	}
 }
