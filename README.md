@@ -127,7 +127,7 @@ Own ship and Target ship relation
 
 </div>
 
-`bearingSector` and `bowSector` give the relative orientation from 'Own ship' reference point and 'Line of sight' with Target ship, once more it uses the already familiar clock sectors. Generally your `fireSector` will match the target `bearingSector`, unless you want to improve accuracy by taking target movement into account. This will require `bowSector` to determine target relative orientation referenced to Line of sight.
+`bearingSector` and `bowSector` give the relative position and orientation from 'Own ship' reference point and 'Line of sight' with 'Target ship', once more it uses the already familiar clock sectors. Generally your `fireSector` will match the target `bearingSector`, unless you want to improve accuracy by taking target movement into account and this will require `bowSector`. Put in the other perspective `bowSector` is the reversed `bearingSector` but from 'Target ship' point of view, for 'Own ship' this has meaning of target relative orientation and movement direction.
 
 ## Your own Bo(a)t
 
