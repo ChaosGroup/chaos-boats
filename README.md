@@ -4,7 +4,7 @@
 
 </div>
 
-# Chaos Bo(a)ts Game Challenge @ js.talks("Bulgaria"); 2020
+# Chaos Bo(a)ts Game Challenge @ js.talks(); 2020
 
 **js.talks("Bulgaria");** is a community event that will take place on **November 20-21, 2020** for the sixth time in Bulgaria.
 
@@ -33,7 +33,7 @@ Chaos Developers Special Award might be bestowed in addition to the authors of s
 
 Chaos Bo(a)ts Game Challenge is open to all js.talks("Bulgaria"); 2020 visitors and will stay open for Pull requests from 11 am on 20 November to 7 pm on 24 November.
 
-You could program more than one Bo(a)t while the game is open for race.
+You could program more than one Bo(a)t while the game is open for race, just mind the bot naming rules presented below.
 
 The default battle setup is between two Bo(a)ts in three rounds and every round is three minutes long.
 

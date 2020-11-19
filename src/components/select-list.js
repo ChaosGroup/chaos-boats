@@ -57,7 +57,7 @@ export default class TextList extends Phaser.GameObjects.Container {
 
 		const valueIndex = this.options.findIndex(o => o.value === this.value);
 		if (valueIndex >= 0) {
-			this.start = Math.min(valueIndex - 1, Math.max(0, this.options.length - VISIBLE_ITEMS));
+			this.start = Math.max(0, Math.min(this.options.length - VISIBLE_ITEMS, valueIndex - 1));
 		}
 
 		this.updateItems();
