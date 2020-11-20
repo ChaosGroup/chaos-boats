@@ -56,7 +56,7 @@ An introduction about GitHub forks and Pull requests can be found at [Working wi
 
 ### What is a Bo(a)t
 
-Bo(a)t is a Bot that controls battle Boat or a Boat that is being controlled by battle Bot, we are not completely sure... Once you have the development environment and game running in your browser (http://localhost:3001), you can check the current Leaderboard and battle boat bots that are already part of the game. Now the fun part begins, the code for every Bot can be found at `static/players/` folder. The Bot is defined by a single file and is essentially a function that on every player turn receives data about the battle environment and returns instructions for boat movement and cannon fire. Let's look at the simplest case, our `Dummy` bot:
+Bo(a)t is a Bot that controls battle Boat or a Boat that is being controlled by battle Bot, we are not completely sure... Once you have the development environment and game running in your browser (http://localhost:3003), you can check the current Leaderboard and battle boat bots that are already part of the game. Now the fun part begins, the code for every Bot can be found at `static/players/` folder. The Bot is defined by a single file and is essentially a function that on every player turn receives data about the battle environment and returns instructions for boat movement and cannon fire. Let's look at the simplest case, our `Dummy` bot:
 
 ```js
 const onGameMessage = (typeof importScripts === 'function'
