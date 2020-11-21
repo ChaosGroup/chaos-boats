@@ -22,5 +22,9 @@
 	"BlackPearl": {
 		"name": "Black Pearl",
 		"worker": "players/Radotooo.js"
-	}
+    },
+    "DeadlyJoe": {
+        "name": "Deadly Joe",
+        "worker": "players/NoHomey.js"
+    }
 }
