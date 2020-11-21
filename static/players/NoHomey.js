@@ -20,32 +20,47 @@ const opsticalInRight = opsticalIn(right);
 const noOpsctical = opsticalAt(0);
 
 const fire = target => {
-	const change = target.range >= 80 ? randIntIncl(-1, 1) : 0;
+	const change = target.range >= 85 ? randIntIncl(-1, 1) : 0;
 	return toClock(target.bearingSector + change);
 };
 
-const fireSector = target => (target.range <= 100 ? fire(target) : 0);
+const fireSector = target => (target.range <= 120 ? fire(target) : 0);
 
 const direction = {
-	ahead: () => randIntIncl(-1, 1),
-	left: () => randIntIncl(-2, -1),
-	right: () => randIntIncl(1, 2),
-	rand: () => randIntIncl(randIntIncl(-2, -1), randIntIncl(1, 2)),
+	ahead: randIntInclFunc(-2, 2),
+	left: randIntInclFunc(-2, -1),
+	right: randIntInclFunc(1, 2)
 };
 
-const rudder = ship =>
+let next = null;
+
+const executeAndRemeber = dir => {
+    next = dir;
+    return direction[dir]();
+}
+
+const simpleRudder = ship =>
 	noOpsctical(ship)
-		? direction.rand()
+		? direction.ahead()
 		: opsticalAhead(ship) || opsticalInLeft(ship)
-		? direction.right()
+		? executeAndRemeber('right')
 		: opsticalAhead(ship) || opsticalInRight(ship)
-		? direction.left()
-		: direction.ahead();
+		? executeAndRemeber('left')
+        : direction.ahead();
+        
+const rudder = ship => {
+    if(next) {
+        const dir = next;
+        next = null;
+        return direction[dir]();
+    }
+    return simpleRudder(ship);
+}
 
 onGameMessage(({ ownShip, targets }) => {
-	const target = targets[0];
+	const target = targets.sort((a, b) => a.range - b.range)[0];
 	return {
-		speed: 6,
+		speed: randIntIncl(4, 6),
 		rudder: rudder(ownShip),
 		fireSector: fireSector(target),
 	};
@@ -56,8 +71,12 @@ function toClock(num) {
 	return rem === 0 ? 12 : rem;
 }
 
+function randIntInclFunc(min, max) {
+    const m = Math.ceil(min);
+    const M = Math.floor(max);
+    return () => randIntIncl(m, M);
+}
+
 function randIntIncl(min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
