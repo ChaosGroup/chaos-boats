@@ -29,15 +29,15 @@ const fireSector = target => (target.range <= 120 ? fire(target) : 0);
 const direction = {
 	ahead: randIntInclFunc(-2, 2),
 	left: randIntInclFunc(-2, -1),
-	right: randIntInclFunc(1, 2)
+	right: randIntInclFunc(1, 2),
 };
 
 let next = null;
 
 const executeAndRemeber = dir => {
-    next = dir;
-    return direction[dir]();
-}
+	next = dir;
+	return direction[dir]();
+};
 
 const simpleRudder = ship =>
 	noOpsctical(ship)
@@ -46,16 +46,16 @@ const simpleRudder = ship =>
 		? executeAndRemeber('right')
 		: opsticalAhead(ship) || opsticalInRight(ship)
 		? executeAndRemeber('left')
-        : direction.ahead();
-        
+		: direction.ahead();
+
 const rudder = ship => {
-    if(next) {
-        const dir = next;
-        next = null;
-        return direction[dir]();
-    }
-    return simpleRudder(ship);
-}
+	if (next) {
+		const dir = next;
+		next = null;
+		return direction[dir]();
+	}
+	return simpleRudder(ship);
+};
 
 onGameMessage(({ ownShip, targets }) => {
 	const target = targets.sort((a, b) => a.range - b.range)[0];
@@ -72,9 +72,9 @@ function toClock(num) {
 }
 
 function randIntInclFunc(min, max) {
-    const m = Math.ceil(min);
-    const M = Math.floor(max);
-    return () => randIntIncl(m, M);
+	const m = Math.ceil(min);
+	const M = Math.floor(max);
+	return () => randIntIncl(m, M);
 }
 
 function randIntIncl(min, max) {
