@@ -18,5 +18,9 @@
 	"DavyJones": {
 		"name": "Davy Jones",
 		"worker": "players/DavyJones.js"
+	},
+	"BlackPearl": {
+		"name": "Black Pearl",
+		"worker": "players/Radotooo.js"
 	}
 }
