@@ -5,15 +5,15 @@ const onGameMessage = (typeof importScripts === 'function'
 
 onGameMessage(({ ownShip, targets }) => {
 	//player default stats
-	speed = 4;
-	fireSector = 0;
-	rudder = getRandomIntInclusive(-1, 1);
+	let speed = 4;
+	let fireSector = 0;
+	let rudder = getRandomIntInclusive(-1, 1);
 
 	//get closest target
 	let currentTarget = targets.sort((a, b) => a.range - b.range)[0];
 
 	//set fire trajectory
-	if (currentTarget.range < 100) {
+	if (currentTarget.range < 150) {
 		speed = 6;
 		fireSector = currentTarget.bearingSector;
 	}
