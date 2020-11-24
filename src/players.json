@@ -26,5 +26,9 @@
     "DeadlyJoe": {
         "name": "Deadly Joe",
         "worker": "players/NoHomey.js"
-    }
+    },
+	"TheBlackbeard": {
+		"name": "Blackbeard",
+		"worker": "players/jokuf_TheBlackbeard.js"
+	}
 }
