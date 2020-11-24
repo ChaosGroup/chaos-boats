@@ -34,5 +34,9 @@
 	"GLaDOS": {
 		"name": "GLaDOS",
 		"worker": "players/Maix31.js"
+	},
+	"JiggleJohn": {
+		"name": "JiggleJohn",
+		"worker": "players/JiggleJohn_LiuboNenov.js"
 	}
 }
