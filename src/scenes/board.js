@@ -47,7 +47,7 @@ export default class BoardScene extends Phaser.Scene {
 			.text(
 				HALF_CANVAS_SIZE,
 				80,
-				['Chaos Bo(a)ts @ js.talks(); 2020', 'Leaderboard'].join('\n'),
+				['Chaos Bo(a)ts @ PlovDev 2020', 'Leaderboard'].join('\n'),
 				HEADER_TEXT_STYLE
 			)
 			.setOrigin(0.5, 0) // center top

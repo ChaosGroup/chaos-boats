@@ -1,12 +1,12 @@
-<div align="center">
+<div align="center" style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;">
 
-![screenshot](images/chaos_logo.png)
+![Chaos Logo](images/chaos_logo.png) ![PlovDev Logo](images/plovdev_logo.png)
 
 </div>
 
-# Chaos Bo(a)ts Game Challenge @ js.talks(); 2020
+# Chaos Bo(a)ts Game Challenge @ PlovDev 2020
 
-**js.talks("Bulgaria");** is a community event that will take place on **November 20-21, 2020** for the sixth time in Bulgaria.
+**PlovDev** is an IT conference dedicated esppecially to the IT talents from the region of Plovdiv. It is taking place on **25 and 26 November** fully online ths year.
 
 Welcome on board to Chaos Bo(a)ts Game Challenge!
 
@@ -14,9 +14,9 @@ Unleash your secret JS superpowers and join in a Great Sea Battle against feroci
 
 <div align="center">
 
-![screenshot](images/screenshot.png)
+![Screenshot](images/screenshot.png)
 
-Latest Game build with Bo(a)ts Leaderboard is at http://chaosgroup.github.io/chaos-boats-jstalks-2020.
+Latest Game build with Bo(a)ts Leaderboard is at http://chaosgroup.github.io/chaos-boats-plovdev-2020.
 
 </div>
 
@@ -26,12 +26,12 @@ To enter the challenge you need your own Bo(a)t to compete against other players
 
 ## Win a prize
 
-All Pull requests received before 7 pm on 24 November will participate in the final ranking. The Bo(a)ts with three best scores on the Leaderboard will win special prizes from Chaos Group.
+All Pull requests received before 7 pm on 29 November will participate in the final ranking. The Bo(a)ts with three best scores on the Leaderboard will win special prizes from Chaos Group.
 Chaos Developers Special Award might be bestowed in addition to the authors of some of the greatest code lines.
 
 ## Some rules
 
-Chaos Bo(a)ts Game Challenge is open to all js.talks("Bulgaria"); 2020 visitors and will stay open for Pull requests from 11 am on 20 November to 7 pm on 24 November.
+Chaos Bo(a)ts Game Challenge is open to all PlovDev 2020 visitors and will stay open for Pull requests from 11 am on 25 November to 7 pm on 29 November.
 
 You could program more than one Bo(a)t while the game is open for race, just mind the bot naming rules presented below.
 
@@ -121,7 +121,7 @@ The array `targets` has data about enemies relative to our boat. The `range` is 
 
 <div align="center">
 
-![screenshot](images/ship_orientation.png)
+![Ship Orientation](images/ship_orientation.png)
 
 Own ship and Target ship relation
 
