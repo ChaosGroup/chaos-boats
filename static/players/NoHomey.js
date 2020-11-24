@@ -12,9 +12,9 @@ const opsticalAt = at => ship => ship.blockedSector == at;
 const opsticalIn = dir => ship => dir.includes(ship.blockedSector);
 
 const opstical = {
-    ahead: [11, 12, 1],
-    left: [9, 10],
-    right: [2, 3]
+	ahead: [11, 12, 1],
+	left: [9, 10],
+	right: [2, 3],
 };
 
 const opsticalAhead = opsticalIn(opstical.ahead);
@@ -28,31 +28,31 @@ const noOpsctical = opsticalAt(0);
 const direction = {
 	ahead: randIntInclFunc(-1, 1),
 	left: randIntInclFunc(-2, -1),
-    right: randIntInclFunc(1, 2)
+	right: randIntInclFunc(1, 2),
 };
 
 const next = [];
 
 const executeAndRemember = (dir, times = 1) => {
-	for(let i = 0; i < times; ++i) {
-        next.push(dir);
-    }
+	for (let i = 0; i < times; ++i) {
+		next.push(dir);
+	}
 	return direction[dir]();
 };
 
 const targetBearingSectorToRudder = [
-     2, // 12
-    -2, // 1
-    -1, // 2
-    -1, // 3
-    -1, // 4
-    -2, // 5
-     0, // 6
-     1, // 7
-     2, // 8
-     1, // 9
-     2, // 10
-     2, // 11
+	2, // 12
+	-2, // 1
+	-1, // 2
+	-1, // 3
+	-1, // 4
+	-2, // 5
+	0, // 6
+	1, // 7
+	2, // 8
+	1, // 9
+	2, // 10
+	2, // 11
 ];
 
 const dangerRange = 80;
@@ -61,27 +61,27 @@ const targetToRudder = target => targetBearingSectorToRudder[target.bearingSecto
 
 const targetIsClose = target => target.range <= dangerRange;
 
-const noOpscticalRudder = target => targetIsClose(target)
-    ? targetToRudder(target) : direction.ahead();
+const noOpscticalRudder = target =>
+	targetIsClose(target) ? targetToRudder(target) : direction.ahead();
 
 const smartRudder = (ship, target) => {
-    if(noOpsctical(ship)) {
-        return noOpscticalRudder(target);
-    }
-    if(opsticalInLeft(ship) && opsticalInRight(ship)) {
-        return executeAndRemember('left', 5);
-    }
-    if(opsticalInLeft(ship)) {
-        return executeAndRemember('right', 2);
-    }
-    if(opsticalInRight(ship)) {
-        return executeAndRemember('left', 2);
-    }
-    if(opsticalAhead(ship)) {
-        return executeAndRemember('right');
-    }
-    return direction.ahead();
-}
+	if (noOpsctical(ship)) {
+		return noOpscticalRudder(target);
+	}
+	if (opsticalInLeft(ship) && opsticalInRight(ship)) {
+		return executeAndRemember('left', 5);
+	}
+	if (opsticalInLeft(ship)) {
+		return executeAndRemember('right', 2);
+	}
+	if (opsticalInRight(ship)) {
+		return executeAndRemember('left', 2);
+	}
+	if (opsticalAhead(ship)) {
+		return executeAndRemember('right');
+	}
+	return direction.ahead();
+};
 
 const rudder = (ship, target) => {
 	if (next.length > 0) {
@@ -102,19 +102,18 @@ const fire = target => {
 
 const fireRange = 200;
 
-const fireSector = target => target.range <= fireRange ? fire(target) : 0;
+const fireSector = target => (target.range <= fireRange ? fire(target) : 0);
 
 ////////////////////////////////////////////////////////////
 // speed
 ///////////////////////////////////////////////////////////
 
 const speed = {
-    normal: 3,
-    fast: 6
+	normal: 3,
+	fast: 6,
 };
 
-const speedBasedOnTarget = target => targetIsClose(target)
-    ? speed.fast : speed.normal;
+const speedBasedOnTarget = target => (targetIsClose(target) ? speed.fast : speed.normal);
 
 ////////////////////////////////////////////////////////////
 // turn
@@ -125,7 +124,7 @@ onGameMessage(({ ownShip, targets }) => {
 	return {
 		speed: speedBasedOnTarget(target),
 		rudder: rudder(ownShip, target),
-		fireSector: fireSector(target)
+		fireSector: fireSector(target),
 	};
 });
 
