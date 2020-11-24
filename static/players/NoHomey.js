@@ -3,68 +3,135 @@ const onGameMessage = (typeof importScripts === 'function'
 	: require('./port')
 ).port;
 
-const opsticalAt = at => ship => ship.blockedSector == at;
+////////////////////////////////////////////////////////////
+// rudder
+///////////////////////////////////////////////////////////
 
-const opsticalAhead = opsticalAt(12);
+const opsticalAt = at => ship => ship.blockedSector == at;
 
 const opsticalIn = dir => ship => dir.includes(ship.blockedSector);
 
-const left = [9, 10, 11];
+const opstical = {
+    ahead: [11, 12, 1],
+    left: [9, 10],
+    right: [2, 3]
+};
 
-const right = [1, 2, 3];
+const opsticalAhead = opsticalIn(opstical.ahead);
 
-const opsticalInLeft = opsticalIn(left);
+const opsticalInLeft = opsticalIn(opstical.left);
 
-const opsticalInRight = opsticalIn(right);
+const opsticalInRight = opsticalIn(opstical.right);
 
 const noOpsctical = opsticalAt(0);
 
-const fire = target => {
-	const change = target.range >= 85 ? randIntIncl(-1, 1) : 0;
-	return toClock(target.bearingSector + change);
-};
-
-const fireSector = target => (target.range <= 120 ? fire(target) : 0);
-
 const direction = {
-	ahead: randIntInclFunc(-2, 2),
+	ahead: randIntInclFunc(-1, 1),
 	left: randIntInclFunc(-2, -1),
-	right: randIntInclFunc(1, 2),
+    right: randIntInclFunc(1, 2)
 };
 
-let next = null;
+const next = [];
 
-const executeAndRemeber = dir => {
-	next = dir;
+const executeAndRemember = (dir, times = 1) => {
+	for(let i = 0; i < times; ++i) {
+        next.push(dir);
+    }
 	return direction[dir]();
 };
 
-const simpleRudder = ship =>
-	noOpsctical(ship)
-		? direction.ahead()
-		: opsticalAhead(ship) || opsticalInLeft(ship)
-		? executeAndRemeber('right')
-		: opsticalAhead(ship) || opsticalInRight(ship)
-		? executeAndRemeber('left')
-		: direction.ahead();
+const targetBearingSectorToRudder = [
+     2, // 12
+    -2, // 1
+    -1, // 2
+    -1, // 3
+    -1, // 4
+    -2, // 5
+     0, // 6
+     1, // 7
+     2, // 8
+     1, // 9
+     2, // 10
+     2, // 11
+];
 
-const rudder = ship => {
-	if (next) {
-		const dir = next;
-		next = null;
+const dangerRange = 80;
+
+const targetToRudder = target => targetBearingSectorToRudder[target.bearingSector % 12];
+
+const targetIsClose = target => target.range <= dangerRange;
+
+const noOpscticalRudder = target => targetIsClose(target)
+    ? targetToRudder(target) : direction.ahead();
+
+const smartRudder = (ship, target) => {
+    if(noOpsctical(ship)) {
+        return noOpscticalRudder(target);
+    }
+    if(opsticalInLeft(ship) && opsticalInRight(ship)) {
+        return executeAndRemember('left', 5);
+    }
+    if(opsticalInLeft(ship)) {
+        return executeAndRemember('right', 2);
+    }
+    if(opsticalInRight(ship)) {
+        return executeAndRemember('left', 2);
+    }
+    if(opsticalAhead(ship)) {
+        return executeAndRemember('right');
+    }
+    return direction.ahead();
+}
+
+const rudder = (ship, target) => {
+	if (next.length > 0) {
+		const dir = next.pop();
 		return direction[dir]();
 	}
-	return simpleRudder(ship);
+	return smartRudder(ship, target);
 };
+
+////////////////////////////////////////////////////////////
+// fire
+///////////////////////////////////////////////////////////
+
+const fire = target => {
+	const change = target.range >= dangerRange ? randIntIncl(-1, 1) : 0;
+	return toClock(target.bearingSector + change);
+};
+
+const fireRange = 200;
+
+const fireSector = target => target.range <= fireRange ? fire(target) : 0;
+
+////////////////////////////////////////////////////////////
+// speed
+///////////////////////////////////////////////////////////
+
+const speed = {
+    normal: 3,
+    fast: 6
+};
+
+const speedBasedOnTarget = target => targetIsClose(target)
+    ? speed.fast : speed.normal;
+
+////////////////////////////////////////////////////////////
+// turn
+///////////////////////////////////////////////////////////
 
 onGameMessage(({ ownShip, targets }) => {
 	const target = targets.sort((a, b) => a.range - b.range)[0];
 	return {
-		speed: randIntIncl(4, 6),
-		rudder: rudder(ownShip),
-		fireSector: fireSector(target),
+		speed: speedBasedOnTarget(target),
+		rudder: rudder(ownShip, target),
+		fireSector: fireSector(target)
 	};
 });
+
+////////////////////////////////////////////////////////////
+// utility
+///////////////////////////////////////////////////////////
 
 function toClock(num) {
 	const rem = num % 12;
