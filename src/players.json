@@ -22,13 +22,17 @@
 	"BlackPearl": {
 		"name": "Black Pearl",
 		"worker": "players/Radotooo.js"
-    },
-    "DeadlyJoe": {
-        "name": "Deadly Joe",
-        "worker": "players/NoHomey.js"
-    },
+	},
+	"DeadlyJoe": {
+		"name": "Deadly Joe",
+		"worker": "players/NoHomey.js"
+	},
 	"TheBlackbeard": {
 		"name": "Blackbeard",
 		"worker": "players/jokuf_TheBlackbeard.js"
+	},
+	"GLaDOS": {
+		"name": "GLaDOS",
+		"worker": "players/Maix31.js"
 	}
 }
