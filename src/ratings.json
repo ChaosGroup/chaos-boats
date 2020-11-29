@@ -1,7 +1,8 @@
 {
 	"Dummy": 0,
 	"MovingDummy": 0,
-	"FiringDummy": 6,
+	"FiringDummy": 3,
 	"JackSparrow": 33,
-	"DavyJones": 15
+	"DavyJones": 24,
+	"DanHook": 48
 }

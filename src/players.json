@@ -22,5 +22,5 @@
 	"DanHook": {
 		"name": "Dan Hook",
 		"worker": "players/engdante.js"
-	},
+	}
 }
