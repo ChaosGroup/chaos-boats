@@ -18,8 +18,8 @@ const HALF_CANVAS_SIZE = CANVAS_SIZE / 2;
 // headless rate players run
 const HEADLESS_RATING = typeof window.onRatePlayers === 'function';
 
-const GAME_ROUNDS = HEADLESS_RATING ? 12 : 3;
-const GAME_TIMER = HEADLESS_RATING ? 1 * 6e4 : 3 * 6e4; // min
+const GAME_ROUNDS = HEADLESS_RATING ? 6 : 3;
+const GAME_TIMER = (HEADLESS_RATING ? 1 : 3) * 6e4; // min
 
 const PLAYERS_TURN_STEP = 300;
 const PLAYERS_TURN_TIMEOUT = 200;
