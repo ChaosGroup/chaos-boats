@@ -1,12 +1,10 @@
-<div align="center" style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap;">
+<div align="center">
 
-![Chaos Logo](images/chaos_logo.png) ![PlovDev Logo](images/plovdev_logo.png)
+![Chaos Logo](images/chaos_logo.png)
 
 </div>
 
-# Chaos Bo(a)ts Game Challenge @ PlovDev 2020
-
-**PlovDev** is an IT conference dedicated esppecially to the IT talents from the region of Plovdiv. It is taking place on **25 and 26 November** fully online ths year.
+# Chaos Bo(a)ts Game Challenge
 
 Welcome on board to Chaos Bo(a)ts Game Challenge!
 
@@ -16,7 +14,7 @@ Unleash your secret JS superpowers and join in a Great Sea Battle against feroci
 
 ![Screenshot](images/screenshot.png)
 
-Latest Game build with Bo(a)ts Leaderboard is at http://chaosgroup.github.io/chaos-boats-plovdev-2020.
+Latest Game build with Bo(a)ts Leaderboard is at http://chaosgroup.github.io/chaos-boats.
 
 </div>
 
@@ -30,8 +28,6 @@ All Pull requests received before 7 pm on 29 November will participate in the fi
 Chaos Developers Special Award might be bestowed in addition to the authors of some of the greatest code lines.
 
 ## Some rules
-
-Chaos Bo(a)ts Game Challenge is open to all PlovDev 2020 visitors and will stay open for Pull requests from 11 am on 25 November to 7 pm on 29 November.
 
 You could program more than one Bo(a)t while the game is open for race, just mind the bot naming rules presented below.
 

@@ -3,7 +3,7 @@ import Phaser from 'phaser';
 import { Preload, Menu, Board, Game } from '/scenes';
 
 const CONFIG = {
-	title: 'Chaos Bo(a)ts @ PlovDev 2020',
+	title: 'Chaos Bo(a)ts',
 	type: Phaser.AUTO,
 	parent: 'phaser-container',
 	width: 960,

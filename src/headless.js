@@ -5,7 +5,7 @@ import { Preload, Game } from '/scenes';
 const SPEED_FACTOR = 3;
 
 const CONFIG = {
-	title: 'Chaos Bo(a)ts @ PlovDev 2020 | Headless',
+	title: 'Chaos Bo(a)ts | Headless',
 	type: Phaser.HEADLESS,
 	parent: 'phaser-container',
 	width: 960,
