@@ -8,7 +8,7 @@
 
 Welcome on board to Chaos Bo(a)ts Game Challenge!
 
-Unleash your secret JS superpowers and join in a Great Sea Battle against ferocious opponents. Make your own Bo(a)t the best performer in this open source game and win some special prizes from Chaos Group. Program your own Bo(a)t by forking the GitHub repo and starting a Pull request.
+Unleash your secret JS superpowers and join in a Great Sea Battle against ferocious opponents. Program your own Bo(a)t by forking the GitHub repo and starting a Pull request.
 
 <div align="center">
 
@@ -21,11 +21,6 @@ Latest Game build with Bo(a)ts Leaderboard is at http://chaosgroup.github.io/cha
 ## Enter the challenge
 
 To enter the challenge you need your own Bo(a)t to compete against other players. Just create a Fork of this GitHub repo, prepare and test your contender code and start a Pull request to register your score in the official game Leaderboard.
-
-## Win a prize
-
-All Pull requests received before 7 pm on 29 November will participate in the final ranking. The Bo(a)ts with three best scores on the Leaderboard will win special prizes from Chaos Group.
-Chaos Developers Special Award might be bestowed in addition to the authors of some of the greatest code lines.
 
 ## Some rules
 
