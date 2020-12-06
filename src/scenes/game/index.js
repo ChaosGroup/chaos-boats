@@ -499,7 +499,8 @@ export default class GameScene extends Phaser.Scene {
 				const bearing = Math.atan2(ownShipHeading.cross(los), ownShipHeading.dot(los));
 				const bearingSector = getSector(bearing);
 
-				const bow = Math.atan2(heading.cross(los.negate()), heading.dot(los.negate()));
+				const _los = los.clone().negate();
+				const bow = Math.atan2(heading.cross(_los), heading.dot(_los));
 				const bowSector = getSector(bow);
 
 				return {

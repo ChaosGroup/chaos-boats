@@ -55,7 +55,7 @@ export default class MenuScene extends Phaser.Scene {
 			.setScale(TILE_SCALE);
 
 		this.header = this.add
-			.text(HALF_CANVAS_SIZE, 80, 'Chaos Bo(a)ts @ js.talks(); 2020', HEADER_TEXT_STYLE)
+			.text(HALF_CANVAS_SIZE, 80, 'Chaos Bo(a)ts @ PlovDev 2020', HEADER_TEXT_STYLE)
 			.setOrigin(0.5, 0) // center top
 			.setDepth(5);
 

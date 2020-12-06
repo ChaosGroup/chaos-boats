@@ -1,8 +1,8 @@
 {
-	"name": "chaos-boats-jstalks-2020",
+	"name": "chaos-boats-plovdev-2020",
 	"version": "1.0.0",
-	"description": "Chaos Bo(a)ts Game Challenge @ js.talks(); 2020",
-	"repository": "https://github.com/ChaosGroup/chaos-boats-jstalks-2020.git",
+	"description": "Chaos Bo(a)ts Game Challenge @ PlovDev 2020",
+	"repository": "https://github.com/ChaosGroup/chaos-boats-plovdev-2020.git",
 	"author": "Martin Dimitrov <martin@sachmata.com>",
 	"license": "MIT",
 	"private": true,

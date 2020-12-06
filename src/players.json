@@ -38,5 +38,9 @@
 	"JiggleJohn": {
 		"name": "JiggleJohn",
 		"worker": "players/JiggleJohn_LiuboNenov.js"
+	},
+	"DanHook": {
+		"name": "Dan Hook",
+		"worker": "players/engdante.js"
 	}
 }
