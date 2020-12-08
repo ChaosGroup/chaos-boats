@@ -1,12 +1,10 @@
 <div align="center">
 
-![Chaos Logo](images/chaos_logo.png)
+![Chaos Logo](images/chaos_boats_wide.jpg)
 
 </div>
 
-# Chaos Bo(a)ts Game Challenge
-
-Welcome on board to Chaos Bo(a)ts Game Challenge!
+## Welcome on board to Chaos Bo(a)ts Game Challenge!
 
 Unleash your secret JS superpowers and join in a Great Sea Battle against ferocious opponents. Program your own Bo(a)t by forking the GitHub repo and starting a Pull request.
 
