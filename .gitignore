@@ -4,3 +4,6 @@ node_modules
 rating/dist
 
 yarn-error.log
+/.vs/ProjectSettings.json
+/.vs/JS/v16/.suo
+/.vs/slnx.sqlite

@@ -42,5 +42,8 @@
 	"DanHook": {
 		"name": "Dan Hook",
 		"worker": "players/engdante.js"
+	},
+	"Daniel10106": {
+		"name": "Sea Seeker",
+		"worker": "players/Daniel10106.js"
 	}
-}
