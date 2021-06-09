@@ -14,61 +14,26 @@ function getTarget(targets) {
 
 function fire(ownShip, target) {
 	var fireSector;
-	switch (target.bowSector) {
-		case 1:
-			if (target.speed > 3) {
-				fireSector = target.bearingSector + 0.5;
-			}
-			else {
-				fireSector = target.bearingSector;
-			}
-			break;
+	switch (ownShip.rudder) {
 		case 2:
-			if (target.speed > 3) {
-				fireSector = target.bearingSector + 0.5;
-			}
-			else {
-				fireSector = target.bearingSector;
-			}
-			break;
 		case 3:
-			if (target.speed > 3) {
-				fireSector = target.bearingSector + 0.2;
-			}
-			else {
-				fireSector = target.bearingSector;
-			}
+			if (target.bearingSector <= 2) fireSector = 12;
+			else fireSector = target.bearingSector - 2;
 			break;
-		case 4:
-			if (target.speed > 3) {
-				fireSector = target.bearingSector + 0.2;
-			}
-			else {
-				fireSector = target.bearingSector;
-			}
+		case -2:
+		case -3:
+			if (target.bearingSector >= 11) fireSector = 12;
+			else fireSector = target.bearingSector + 2;
 			break;
-		case 5:
-			fireSector = target.bearingSector + 0.5;
+		case 1:
+			if (target.bearingSector <= 1) fireSector = 12;
+			else fireSector = target.bearingSector - 1;
 			break;
-		case 6:
-			fireSector = target.bearingSector;
+		case -1:
+			if (target.bearingSector >= 12) fireSector = 1;
+			else fireSector = target.bearingSector + 1;
 			break;
-		case 7:
-			fireSector = target.bearingSector - 0.6;
-			break;
-		case 8:
-			fireSector = target.bearingSector - 0.5;
-			break;
-		case 9:
-			fireSector = target.bearingSector;
-			break;
-		case 10:
-			fireSector = target.bearingSector - 0.6;
-			break;
-		case 11:
-			fireSector = target.bearingSector - 0.2;
-			break;
-		case 12:
+		case 0:
 			fireSector = target.bearingSector;
 			break;
 	}
