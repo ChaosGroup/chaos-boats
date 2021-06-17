@@ -23,7 +23,7 @@ const onGameMessage = (typeof importScripts === 'function'
 	: require('./port')
 ).port;
 
-onGameMessage(({ ownShip, targets }) => {
+onGameMessage(({ targets }) => {
 	let t = targets[0];
 	let normalized_input = [t.speed / 6, t.range / 200, t.bearingSector / 12, t.bowSector / 12];
 

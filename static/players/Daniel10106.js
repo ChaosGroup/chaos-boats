@@ -12,6 +12,7 @@ function getTarget(targets) {
 	return target;
 }
 
+// eslint-disable-next-line no-unused-vars
 function fire(ownShip, target) {
 	var fireSector;
 	switch (ownShip.rudder) {
@@ -43,6 +44,7 @@ function fire(ownShip, target) {
 onGameMessage(({ ownShip, targets }) => {
 	let speed = 0;
 	let rudder = 0;
+	let fireSector = 0;
 	let target = getTarget(targets);
 	if (target.range < 80) {
 		if (target.health < 20) {
@@ -51,8 +53,7 @@ onGameMessage(({ ownShip, targets }) => {
 		rudder = target.bearingSector > 6 ? -1 : 1;
 		fireSector = target.bearingSector;
 		speed = 5;
-	}
-	else {
+	} else {
 		speed = 5;
 		rudder = getRandomIntInclusive(-3, 3);
 		if (rudder === 0) rudder = 1;
