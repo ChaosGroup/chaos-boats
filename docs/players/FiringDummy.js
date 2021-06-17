@@ -1,6 +1,5 @@
-const onGameMessage = (typeof importScripts === 'function'
-	? (importScripts('port.js'), self)
-	: require('./port')
+const onGameMessage = (
+	typeof importScripts === 'function' ? (importScripts('port.js'), self) : require('./port')
 ).port;
 
 // stay in place and fire against target

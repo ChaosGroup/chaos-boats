@@ -18,9 +18,8 @@ const w = [
 	],
 ];
 
-const onGameMessage = (typeof importScripts === 'function'
-	? (importScripts('port.js'), self)
-	: require('./port')
+const onGameMessage = (
+	typeof importScripts === 'function' ? (importScripts('port.js'), self) : require('./port')
 ).port;
 
 onGameMessage(({ targets }) => {

@@ -1,6 +1,5 @@
-const onGameMessage = (typeof importScripts === 'function'
-	? (importScripts('port.js'), self)
-	: require('./port')
+const onGameMessage = (
+	typeof importScripts === 'function' ? (importScripts('port.js'), self) : require('./port')
 ).port;
 
 // move randomly and run when close to a target
