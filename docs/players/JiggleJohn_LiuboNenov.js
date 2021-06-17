@@ -4,9 +4,9 @@ const onGameMessage = (typeof importScripts === 'function'
 ).port;
 
 onGameMessage(({ ownShip, targets }) => {
-	speed = 4;
-	fireSector = 0;
-	rudder = getRandomInt(-1, 1);
+	let speed = 4;
+	let fireSector = 0;
+	let rudder = getRandomInt(-1, 1);
 	let target = targets.sort((a, b) => a.range - b.range)[0];
 	if (target.range < 150) {
 		speed = 6;

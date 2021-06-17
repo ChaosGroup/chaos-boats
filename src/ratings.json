@@ -1,13 +1,14 @@
 {
 	"Dummy": 0,
 	"MovingDummy": 0,
-	"FiringDummy": 6,
-	"JackSparrow": 57,
-	"DavyJones": 39,
-	"BlackPearl": 102,
-	"DeadlyJoe": 105,
-	"TheBlackbeard": 96,
-	"GLaDOS": 0,
-	"JiggleJohn": 93,
-	"DanHook": 132
+	"FiringDummy": 3,
+	"JackSparrow": 78,
+	"DavyJones": 42,
+	"BlackPearl": 120,
+	"DeadlyJoe": 126,
+	"TheBlackbeard": 99,
+	"GLaDOS": 3,
+	"JiggleJohn": 108,
+	"DanHook": 144,
+	"Daniel10106": 69
 }

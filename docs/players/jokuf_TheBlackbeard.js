@@ -43,6 +43,7 @@ function move(current, prev) {
 		return randomInt(1, 3);
 	} else if (current.blockedSector === 0) {
 		if (null !== prev && prev.blockedSector !== 0) {
+			// TODO: ??
 		}
 		return randomValue([-1, 0, 1, 2]);
 	}
